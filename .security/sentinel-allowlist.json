@@ -1,0 +1,6 @@
+{
+    "allowlist": [
+        "Write(docs/**)",
+        "Write(README.md)"
+    ]
+}

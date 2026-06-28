@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: oschoolDB
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-oschool}
+      POSTGRES_USER: ${POSTGRES_USER:-oschool}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-oschool}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - oschool_volT1:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-oschool} -d ${POSTGRES_DB:-oschool}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  oschool_volT1:
