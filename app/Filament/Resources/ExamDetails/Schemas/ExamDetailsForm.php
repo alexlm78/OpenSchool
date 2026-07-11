@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ExamDetails\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -12,9 +13,11 @@ class ExamDetailsForm
     {
         return $schema
             ->components([
-                TextInput::make('school_id')
+                Select::make('school_id')
+                    ->relationship('school', 'name')
                     ->required()
-                    ->numeric(),
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('evaluationable_type')
                     ->required(),
                 TextInput::make('evaluationable_id')

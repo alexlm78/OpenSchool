@@ -3,8 +3,9 @@
 namespace App\Filament\Resources\AssignmentDetails\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -14,9 +15,11 @@ class AssignmentDetailsForm
     {
         return $schema
             ->components([
-                TextInput::make('school_id')
+                Select::make('school_id')
+                    ->relationship('school', 'name')
                     ->required()
-                    ->numeric(),
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('evaluationable_type')
                     ->required(),
                 TextInput::make('evaluationable_id')

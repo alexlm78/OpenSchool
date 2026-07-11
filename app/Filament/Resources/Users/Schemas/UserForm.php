@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -22,8 +23,10 @@ class UserForm
                 TextInput::make('password')
                     ->password()
                     ->required(),
-                TextInput::make('school_id')
-                    ->numeric(),
+                Select::make('school_id')
+                    ->relationship('school', 'name')
+                    ->searchable()
+                    ->preload(),
             ]);
     }
 }

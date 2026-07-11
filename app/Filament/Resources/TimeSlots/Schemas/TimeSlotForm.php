@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TimeSlots\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Schemas\Schema;
@@ -12,9 +13,11 @@ class TimeSlotForm
     {
         return $schema
             ->components([
-                TextInput::make('school_id')
+                Select::make('school_id')
+                    ->relationship('school', 'name')
                     ->required()
-                    ->numeric(),
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('day_of_week')
                     ->required(),
                 TimePicker::make('start_time')

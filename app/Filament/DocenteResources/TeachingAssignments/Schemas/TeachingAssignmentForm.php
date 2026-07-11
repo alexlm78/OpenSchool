@@ -2,6 +2,7 @@
 
 namespace App\Filament\DocenteResources\TeachingAssignments\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -11,9 +12,11 @@ class TeachingAssignmentForm
     {
         return $schema
             ->components([
-                TextInput::make('school_id')
+                Select::make('school_id')
+                    ->relationship('school', 'name')
                     ->required()
-                    ->numeric(),
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('course_offering_id')
                     ->required()
                     ->numeric(),

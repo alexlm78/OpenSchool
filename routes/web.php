@@ -4,7 +4,7 @@ use App\Http\Controllers\SubmissionFileDownloadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/alumno');
 });
 
 Route::middleware(['auth'])->get('/submission-files/{submissionFile}/download', SubmissionFileDownloadController::class)

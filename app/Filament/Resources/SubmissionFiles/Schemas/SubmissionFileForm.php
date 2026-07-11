@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SubmissionFiles\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -11,9 +12,11 @@ class SubmissionFileForm
     {
         return $schema
             ->components([
-                TextInput::make('school_id')
+                Select::make('school_id')
+                    ->relationship('school', 'name')
                     ->required()
-                    ->numeric(),
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('submission_id')
                     ->required()
                     ->numeric(),

@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\Grades\Schemas;
 
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class GradeForm
@@ -12,9 +13,11 @@ class GradeForm
     {
         return $schema
             ->components([
-                TextInput::make('school_id')
+                Select::make('school_id')
+                    ->relationship('school', 'name')
                     ->required()
-                    ->numeric(),
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('evaluation_id')
                     ->required()
                     ->numeric(),
