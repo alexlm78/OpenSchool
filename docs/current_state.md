@@ -1,121 +1,122 @@
 ---
 name: current_state
-description: Estado actual del proyecto OpenSchool (actualizado automáticamente)
+description: Current state of the OpenSchool project (auto-updated)
 updated_at: 2026-05-31
 ---
 
-# Estado actual de OpenSchool
+# Current State of OpenSchool
 
-## Stack verificado
-- Laravel 13.x (ver [composer.json](file:///Users/alexlm78/workspaces/php/OpenSchool/composer.json#L8-L15))
+## Verified stack
+- Laravel 13.x (see [composer.json](file:///Users/alexlm78/workspaces/php/OpenSchool/composer.json#L8-L15))
 - Filament 5.6, Livewire 4.3, Spatie Permission 7.4
-- Frontend build: Vite + Tailwind (ver [package.json](file:///Users/alexlm78/workspaces/php/OpenSchool/package.json#L1-L15))
+- Frontend build: Vite + Tailwind (see [package.json](file:///Users/alexlm78/workspaces/php/OpenSchool/package.json#L1-L15))
 
-## Estructura funcional existente
-- Paneles Filament:
+## Existing functional structure
+- Filament panels:
   - Admin: [AdminPanelProvider.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Providers/Filament/AdminPanelProvider.php#L22-L58)
-  - Docente: [DocentePanelProvider.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Providers/Filament/DocentePanelProvider.php#L22-L58)
-- Modelo de datos base (migraciones) para:
-  - Tenancy (schools), usuarios, perfiles, modelo académico, evaluaciones/entregas/calificaciones (ver [database/migrations](file:///Users/alexlm78/workspaces/php/OpenSchool/database/migrations/))
+  - Teacher: [DocentePanelProvider.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Providers/Filament/DocentePanelProvider.php#L22-L58)
+- Base data model (migrations) for:
+  - Tenancy (schools), users, profiles, academic model, evaluations/submissions/grades (see [database/migrations](file:///Users/alexlm78/workspaces/php/OpenSchool/database/migrations/))
 
-## Cambios recientes aplicados (multitenancy hardening)
+## Recent changes applied (multitenancy hardening)
 
-### TenantContext (fuente de verdad server-side)
-- Se agregó un contexto de tenant para almacenar el `school_id` resuelto por servidor:
+### TenantContext (server-side source of truth)
+- Added a tenant context to store the `school_id` resolved by the server:
   - [TenantContext.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Tenancy/TenantContext.php)
 
-### Middleware SetTenantFromAuth
-- Se agregó middleware que setea el tenant desde el usuario autenticado y lo incorpora al stack web:
+### SetTenantFromAuth Middleware
+- Added middleware that sets the tenant from the authenticated user and adds it to the web stack:
   - [SetTenantFromAuth.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Http/Middleware/SetTenantFromAuth.php)
-  - Registrado en: [bootstrap/app.php](file:///Users/alexlm78/workspaces/php/OpenSchool/bootstrap/app.php#L8-L23)
+  - Registered in: [bootstrap/app.php](file:///Users/alexlm78/workspaces/php/OpenSchool/bootstrap/app.php#L8-L23)
 
-### Scope global de tenancy sin inputs no confiables
-- El scope global ya no lee `school_id` desde el request; solo aplica filtro cuando `TenantContext` tiene valor:
+### Global tenancy scope without untrusted input
+- The global scope no longer reads `school_id` from the request; it only applies the filter when `TenantContext` has a value:
   - [TenancyScope.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/Scopes/TenancyScope.php#L1-L33)
-- El scope se aplica por modelo mediante clases base:
+- The scope is applied per model via base classes:
   - [TenantModel.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/TenantModel.php)
   - [TenantAuthenticatable.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/TenantAuthenticatable.php)
 
-### Limpieza de scopes duplicados
-- Se removió el uso de `SchoolScopeTrait` de modelos y se eliminaron implementaciones duplicadas.
+### Cleanup of duplicated scopes
+- Removed use of `SchoolScopeTrait` from models and eliminated duplicated implementations.
 
-### Spatie Permissions Teams (corrección del resolver)
-- Se corrigió el team resolver para que implemente el contrato esperado por Spatie:
+### Spatie Permissions Teams (resolver fix)
+- Fixed the team resolver to implement the contract expected by Spatie:
   - [SchoolTeamResolver.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Permission/SchoolTeamResolver.php)
 
-## Tests agregados (gates de tenancy)
-- Se agregó un test feature que valida:
-  - Filtrado por tenant context
-  - Middleware ignorando `school_id` enviado por querystring
+## Tests added (tenancy gates)
+- Added a feature test that validates:
+  - Filtering by tenant context
+  - Middleware ignoring `school_id` sent via querystring
   - [TenancyTest.php](file:///Users/alexlm78/workspaces/php/OpenSchool/tests/Feature/TenancyTest.php)
 
-## Reglas de matrícula (C1) implementadas
-- Servicio de dominio (transacción + validaciones):
+## Enrollment rules (C1) implemented
+- Domain service (transaction + validations):
   - [EnrollStudent.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Domain/Enrollment/EnrollStudent.php)
-  - Excepciones: [Exceptions](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Domain/Enrollment/Exceptions/)
-- Integración inicial en Filament (Create Enrollment):
+  - Exceptions: [Exceptions](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Domain/Enrollment/Exceptions/)
+- Initial integration in Filament (Create Enrollment):
   - [CreateEnrollment.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/Resources/Enrollments/Pages/CreateEnrollment.php)
-  - Formulario actualizado a Selects: [EnrollmentForm.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/Resources/Enrollments/Schemas/EnrollmentForm.php)
+  - Form updated to Selects: [EnrollmentForm.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/Resources/Enrollments/Schemas/EnrollmentForm.php)
 - Tests:
   - [EnrollmentRulesTest.php](file:///Users/alexlm78/workspaces/php/OpenSchool/tests/Feature/EnrollmentRulesTest.php)
 
-## Descarga segura de archivos (C2) implementada
-- Policy de autorización (dueño/alumno, admin, docente asignado):
+## Secure file download (C2) implemented
+- Authorization policy (owner/student, admin, assigned teacher):
   - [SubmissionFilePolicy.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Policies/SubmissionFilePolicy.php)
-- Controlador de descarga (storage privado):
+- Download controller (private storage):
   - [SubmissionFileDownloadController.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Http/Controllers/SubmissionFileDownloadController.php)
-- Ruta protegida:
+- Protected route:
   - [web.php](file:///Users/alexlm78/workspaces/php/OpenSchool/routes/web.php#L1-L11)
-- Acción de descarga en Filament (SubmissionFiles):
+- Download action in Filament (SubmissionFiles):
   - [SubmissionFilesTable.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/Resources/SubmissionFiles/Tables/SubmissionFilesTable.php#L1-L60)
 - Tests:
   - [SubmissionFileDownloadTest.php](file:///Users/alexlm78/workspaces/php/OpenSchool/tests/Feature/SubmissionFileDownloadTest.php)
 
-## C3 (parcial): Evaluaciones y Calificación (mínimo)
-- Docente panel:
-  - Namespaces corregidos para que `discoverResources` del panel docente encuentre sus resources.
-  - Filtro por docente asignado:
+## C3 (partial): Evaluations and Grading (minimum)
+- Teacher panel:
+  - Fixed namespaces so the teacher panel's `discoverResources` finds its resources.
+  - Filter by assigned teacher:
     - Evaluations: [EvaluationResource.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/Evaluations/EvaluationResource.php)
     - Submissions: [SubmissionResource.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/Submissions/SubmissionResource.php)
     - CourseOfferings: [CourseOfferingResource.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/CourseOfferings/CourseOfferingResource.php)
-- Crear evaluación:
-  - Ahora crea automáticamente un `AssignmentDetails` asociado: [CreateEvaluation.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/Evaluations/Pages/CreateEvaluation.php)
-  - Formulario evita `school_id` manual y restringe `course_offering_id` a secciones asignadas: [EvaluationForm.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/Evaluations/Schemas/EvaluationForm.php)
-- Calificar submission:
-  - Acción "Grade" en tabla de submissions crea/actualiza Grade: [SubmissionsTable.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/Submissions/Tables/SubmissionsTable.php)
-  - Policy para autorizar la acción: [SubmissionPolicy.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Policies/SubmissionPolicy.php)
-- Modelos completados:
+- Create evaluation:
+  - Now automatically creates an associated `AssignmentDetails`: [CreateEvaluation.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/Evaluations/Pages/CreateEvaluation.php)
+  - Form avoids manual `school_id` and restricts `course_offering_id` to assigned sections: [EvaluationForm.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/Evaluations/Schemas/EvaluationForm.php)
+- Grading a submission:
+  - "Grade" action in the submissions table creates/updates Grade: [SubmissionsTable.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/Submissions/Tables/SubmissionsTable.php)
+  - Policy to authorize the action: [SubmissionPolicy.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Policies/SubmissionPolicy.php)
+- Completed models:
   - [Grade.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/Grade.php)
   - Details: [AssignmentDetails.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/AssignmentDetails.php), [ExamDetails.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/ExamDetails.php), [ProjectDetails.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/ProjectDetails.php)
-- TenantModel: asignación automática de `school_id` al crear, cuando el TenantContext está seteado:
+- TenantModel: automatic assignment of `school_id` on creation, when TenantContext is set:
   - [TenantModel.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/TenantModel.php)
 - Tests:
-  - Policy de calificación: [SubmissionGradingPolicyTest.php](file:///Users/alexlm78/workspaces/php/OpenSchool/tests/Feature/SubmissionGradingPolicyTest.php)
+  - Grading policy: [SubmissionGradingPolicyTest.php](file:///Users/alexlm78/workspaces/php/OpenSchool/tests/Feature/SubmissionGradingPolicyTest.php)
 
-## D1: RBAC y visibilidad por rol (Admin vs Docente)
-- Middlewares por panel (aplicados solo a rutas autenticadas del panel):
-  - Admin: [EnsureAdminRole.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Http/Middleware/EnsureAdminRole.php), configurado en [AdminPanelProvider.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Providers/Filament/AdminPanelProvider.php)
-  - Docente: [EnsureTeacherRole.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Http/Middleware/EnsureTeacherRole.php), configurado en [DocentePanelProvider.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Providers/Filament/DocentePanelProvider.php)
-- Gate de acceso al panel (FilamentUser):
-  - [User.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/User.php) implementa `canAccessPanel()` para permitir Admin/Docente según rol cuando `APP_ENV != local`.
-- Bases de Resource para restringir visibilidad/creación por rol:
+## D1: RBAC and role-based visibility (Admin vs Teacher)
+- Per-panel middlewares (applied only to authenticated panel routes):
+  - Admin: [EnsureAdminRole.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Http/Middleware/EnsureAdminRole.php), configured in [AdminPanelProvider.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Providers/Filament/AdminPanelProvider.php)
+  - Teacher: [EnsureTeacherRole.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Http/Middleware/EnsureTeacherRole.php), configured in [DocentePanelProvider.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Providers/Filament/DocentePanelProvider.php)
+- Panel access gate (FilamentUser):
+  - [User.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Models/User.php) implements `canAccessPanel()` to allow Admin/Teacher based on role when `APP_ENV != local`.
+- Base Resource classes to restrict visibility/creation by role:
   - Admin: [AdminResource.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/AdminResource.php)
-  - Docente: [DocenteResource.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/DocenteResource.php)
-- Migración de Resources:
-  - Admin panel: Resources bajo [app/Filament/Resources](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/Resources/) ahora extienden `AdminResource`.
-  - Docente panel: Resources bajo [app/Filament/DocenteResources](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/) ahora extienden `DocenteResource`.
+  - Teacher: [DocenteResource.php](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/DocenteResource.php)
+- Resource migration:
+  - Admin panel: Resources under [app/Filament/Resources](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/Resources/) now extend `AdminResource`.
+  - Teacher panel: Resources under [app/Filament/DocenteResources](file:///Users/alexlm78/workspaces/php/OpenSchool/app/Filament/DocenteResources/) now extend `DocenteResource`.
 - Tests:
-  - Acceso a paneles por rol y login accesible para guests: [PanelAccessTest.php](file:///Users/alexlm78/workspaces/php/OpenSchool/tests/Feature/PanelAccessTest.php)
+  - Panel access by role and login accessible for guests: [PanelAccessTest.php](file:///Users/alexlm78/workspaces/php/OpenSchool/tests/Feature/PanelAccessTest.php)
 
-## Brechas actuales para “app totalmente funcional”
+## Current gaps for a "fully functional app"
 
-### Bloqueantes (MVP1)
-- Completar reglas de matrícula: definir comportamiento de `capacity=0` y mejorar UX de mensajes/selección en UI.
-- Ajustar Docente Panel: limitar queries a secciones asignadas y acciones por permisos/rol.
+### Blockers (MVP1)
+- Complete enrollment rules: define behavior for `capacity=0` and improve message/selection UX in the UI.
+- Adjust Teacher Panel: limit queries to assigned sections and actions by permissions/role.
 
-### Funcionalidad pendiente
-- Portales Livewire (Alumno y Apoderado) según [architecture.md](file:///Users/alexlm78/workspaces/php/OpenSchool/docs/architecture.md).
-- API móvil (Sanctum): hoy no existe `routes/api.php` y falta implementar autenticación/endpoints.
-- Notificaciones: events/listeners/jobs y estrategia de idempotencia.
-- Observabilidad: correlation id en logs y propagación a jobs.
+### Pending functionality
+- Livewire portals (Student and Guardian) per [architecture.md](file:///Users/alexlm78/workspaces/php/OpenSchool/docs/architecture.md).
+- Mobile API (Sanctum): `routes/api.php` does not exist today and authentication/endpoints still need to be implemented.
+- Notifications: events/listeners/jobs and idempotency strategy.
+- Observability: correlation id in logs and propagation to jobs.
 - Quality gates: Pint + PHPStan/Psalm + CI.
+</content>

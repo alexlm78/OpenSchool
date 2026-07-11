@@ -1,190 +1,191 @@
-# Documento de Diseño Arquitectural y Funcional de OpenSchool
+# OpenSchool Architectural and Functional Design Document
 
-## Visión General
+## Overview
 
-OpenSchool es una plataforma de gestión educativa integral construida sobre Laravel 13.x, diseñada para manejar múltiples instituciones educativas (multitenancy) con roles diferenciados (administradores, docentes, alumnos, apoderados) y funcionalidades que cubren desde la matrícula hasta la evaluación y seguimiento académico.
+OpenSchool is a comprehensive educational management platform built on Laravel 13.x, designed to handle multiple educational institutions (multitenancy) with differentiated roles (administrators, teachers, students, guardians) and features covering everything from enrollment to academic evaluation and tracking.
 
-## Arquitectura Técnica
+## Technical Architecture
 
-### Stack Tecnológico
+### Technology Stack
 - **Backend**: Laravel 13.x (PHP framework)
-- **Paneles de Administración**: Filament v5.6 (admin panels)
-- **Componentes Reactivos**: Livewire v4.3 (interfaz de usuario dinámica)
-- **Gestión de Permisos**: Spatie Laravel Permissions
-- **Autenticación**: Laravel Sanctum (para API móvil)
-- **Búsqueda**: Laravel Scout con Meilisearch driver
-- **Colas y Jobs**: Redis (driver de cola)
-- **Almacenamiento de Archivos**: Disco privado (local/S3 configurables)
-- **Logging**: Laravel Pail/Pao con correlation ID
+- **Admin Panels**: Filament v5.6
+- **Reactive Components**: Livewire v4.3 (dynamic user interface)
+- **Permission Management**: Spatie Laravel Permissions
+- **Authentication**: Laravel Sanctum (for mobile API)
+- **Search**: Laravel Scout with Meilisearch driver
+- **Queues and Jobs**: Redis (queue driver)
+- **File Storage**: private disk (local/S3 configurable)
+- **Logging**: Laravel Pail/Pao with correlation ID
 - **Asset Bundling**: Vite
-- **Testing**: Pest/PHPUnit, Laravel Pint (estilo de código)
-- **Base de Datos**: SQLite (desarrollo), configurable a MySQL/PostgreSQL
+- **Testing**: Pest/PHPUnit, Laravel Pint (code style)
+- **Database**: SQLite (development), configurable to MySQL/PostgreSQL
 
-### Patrón de Multitenancy
-- Implementación mediante **global scope** en todos los modelos relevantes
-- Cada tabla principal incluye columna `school_id` (except tablas de sistema como users, passwords_resets, etc.)
-- Las políticas de Spatie Permissions usan `team_id` = `school_id` para aislar roles y permisos por institución
-- Middleware de tenancy que establece el `school_id` actual basado en el subdominio o tokens de API
+### Multitenancy Pattern
+- Implemented via a **global scope** on all relevant models
+- Every main table includes a `school_id` column (except system tables like users, password_resets, etc.)
+- Spatie Permissions policies use `team_id` = `school_id` to isolate roles and permissions per institution
+- Tenancy middleware sets the current `school_id` based on the subdomain or API tokens
 
-### Estructura de Módulos
+### Module Structure
 
-#### 1. Módulo de Tenancy y Usuarios
-- **School**: representa una institución educativa
-- **User**: sistema de autenticación centralizado (pero aislado por school_id vía scope)
-- **Role/Permission**: gestionados por Spatie, aislados por school
-- Modelos relacionados: Student, Teacher, Guardian, GuardianStudent (pivot)
+#### 1. Tenancy and Users Module
+- **School**: represents an educational institution
+- **User**: centralized authentication system (but isolated per school_id via scope)
+- **Role/Permission**: managed by Spatie, isolated per school
+- Related models: Student, Teacher, Guardian, GuardianStudent (pivot)
 
-#### 2. Modelo Académico
-- **AcademicPeriod**: períodos lectivos (trimestres, semestres, etc.)
-- **CourseTemplate**: definición abstracta de un curso (nombre, código, créditos)
-- **CourseOffering**: instancia específica de un CourseTemplate en un AcademicPeriod con capacidad y horarios
-- **TimeSlot**: bloques de tiempo horarios (lunes 8-10am, etc.)
-- **OfferingTimeSlot**: asignación de horarios a un CourseOffering
-- **TeachingAssignment**: asignación de un Teacher a un CourseOffering (una sección)
-- **Enrollment**: matrícula de un Student en un CourseOffering (con validación de conflictos de horario y capacidad)
+#### 2. Academic Model
+- **AcademicPeriod**: academic terms (quarters, semesters, etc.)
+- **CourseTemplate**: abstract definition of a course (name, code, credits)
+- **CourseOffering**: specific instance of a CourseTemplate in an AcademicPeriod with capacity and schedule
+- **TimeSlot**: time blocks (Monday 8-10am, etc.)
+- **OfferingTimeSlot**: schedule assignment for a CourseOffering
+- **TeachingAssignment**: assignment of a Teacher to a CourseOffering (a section)
+- **Enrollment**: a Student's enrollment in a CourseOffering (with schedule conflict and capacity validation)
 
-#### 3. Evaluaciones y Entregas
-- **Evaluation**: evaluación polimórfica (puede ser tarea, examen, proyecto, etc.)
-  - Tipos mediante relaciones: AssignmentDetails, ExamDetails, ProjectDetails
-- **Submission**: entrega de un estudiante para una Evaluation
-- **SubmissionFile**: archivos adjuntos a una Submission (almacenamiento privado)
-- **Grade**: calificación y feedback asociada a una Submission
-- **Observers/Events**: generan notificaciones (coladas) cuando se crean/actualizan evaluations, submissions, grades
+#### 3. Evaluations and Submissions
+- **Evaluation**: polymorphic evaluation (can be an assignment, exam, project, etc.)
+  - Types via relationships: AssignmentDetails, ExamDetails, ProjectDetails
+- **Submission**: a student's submission for an Evaluation
+- **SubmissionFile**: files attached to a Submission (private storage)
+- **Grade**: grade and feedback associated with a Submission
+- **Observers/Events**: generate notifications (queued) when evaluations, submissions, and grades are created/updated
 
-#### 4. Interfaces de Usuario
-- **Admin Panel** (Filament): gestión completa de escuelas, usuarios, roles, períodos, plantillas de cursos, ofertaciones, asignaciones, matrículas
-- **Docente Panel** (Filament): vista limitada a las secciones asignadas al docente; permite crear evaluaciones, ver entregas, calificar
-- **Alumno Portal** (Livewire): 
-  - Ver cursos inscritos y su horario
-  - Ver evaluaciones pendientes y calificadas
-  - Subentar entregas y ver feedback
-  - Calendario académico
-- **Apoderado Portal** (Livewire):
-  - Vinculación con uno o más estudiantes
-  - Ver calendario consolidado de evaluaciones de sus hijos
-  - Ver calificaciones y progreso por período
-  - Recibir notificaciones
-- **API Móvil** (Sanctum):
-  - Endpoints autenticados para cursos, evaluaciones, submissions, grades
-  - Misma capa de políticas y tenancy que las interfaces web
+#### 4. User Interfaces
+- **Admin Panel** (Filament): full management of schools, users, roles, periods, course templates, offerings, assignments, enrollments
+- **Teacher Panel** (Filament): limited view of sections assigned to the teacher; allows creating evaluations, viewing submissions, grading
+- **Student Portal** (Livewire):
+  - View enrolled courses and their schedule
+  - View pending and graded evaluations
+  - Upload submissions and view feedback
+  - Academic calendar
+- **Guardian Portal** (Livewire):
+  - Linking to one or more students
+  - Consolidated calendar of their children's evaluations
+  - View grades and progress per period
+  - Receive notifications
+- **Mobile API** (Sanctum):
+  - Authenticated endpoints for courses, evaluations, submissions, grades
+  - Same policy and tenancy layer as the web interfaces
 
-## Flujo de Trabajo por Tipo de Usuario
+## Workflow by User Type
 
-### Administrador
-1. Inicia sesión en /admin
-2. Gestiona escuelas (crear/editar/desactivar)
-3. Crea usuarios y asigna roles (admin, docente, etc.) dentro de su escuela
-4. Define períodos académicos
-5. Gestiona catálogo de plantillas de cursos
-6. Aprueba ofertaciones de cursos (creadas por coordinadores o directamente)
-7. Supervisa matrículas y reportes
+### Administrator
+1. Logs in at /admin
+2. Manages schools (create/edit/deactivate)
+3. Creates users and assigns roles (admin, teacher, etc.) within their school
+4. Defines academic periods
+5. Manages the course template catalog
+6. Approves course offerings (created by coordinators or directly)
+7. Oversees enrollments and reports
 
-### Docente
-1. Inicia sesión en /docente
-2. Ve su panel con las secciones asignadas (CourseOfferings donde es teacher)
-3. Para cada sección:
-   - Ve lista de estudiantes inscritos
-   - Crea evaluaciones (tareas, exámenes, proyectos) con fechas y descripción
-   - Publica evaluaciones (visibles para alumnos)
-   - Revisa entregas subidas por estudiantes
-   - Calienta entregas y proporciona feedback
-   - Publica calificaciones
-4. Puede ver reportes de su sección
+### Teacher
+1. Logs in at /docente
+2. Views their panel with assigned sections (CourseOfferings where they are teacher)
+3. For each section:
+   - Views list of enrolled students
+   - Creates evaluations (assignments, exams, projects) with dates and description
+   - Publishes evaluations (visible to students)
+   - Reviews submissions uploaded by students
+   - Grades submissions and provides feedback
+   - Publishes grades
+4. Can view reports for their section
 
-### Alumno
-1. Inicia sesión en /alumno
-2. Ve su tablero con:
-   - Cursos inscritos del período actual
-   - Próximas evaluaciones
-   - Calendario académico
-3. Accede a un curso específico para:
-   - Ver detalle de evaluaciones
-   - Subentar entregas (con archivos adjuntos)
-   - Ver calificaciones y feedback de entregas ya calificadas
-   - Participar en actividades (según configuración)
+### Student
+1. Logs in at /alumno
+2. Views their dashboard with:
+   - Enrolled courses for the current period
+   - Upcoming evaluations
+   - Academic calendar
+3. Accesses a specific course to:
+   - View evaluation details
+   - Upload submissions (with attached files)
+   - View grades and feedback for already-graded submissions
+   - Participate in activities (depending on configuration)
 
-### Apoderado
-1. Inicia sesión en /apoderado
-2. Vincula a sus hijos (si aún no lo está) mediante código de estudiante o solicitud aprobada por admin
-3. Ve resumen de todos sus hijos vinculados:
-   - Próximas evaluaciones de cada hijo
-   - Calendario combinado
-   - Promedios y progreso por período
-4. Accede al detalle de un hijo para ver su desempeño curso por curso
+### Guardian
+1. Logs in at /apoderado
+2. Links their children (if not already linked) via student code or admin-approved request
+3. Views a summary of all their linked children:
+   - Upcoming evaluations for each child
+   - Combined calendar
+   - Averages and progress per period
+4. Accesses a child's detail view to see their performance course by course
 
-## Consideraciones para Pruebas de Usuario
+## Considerations for User Testing
 
-### Escenarios de Prueba Clave
+### Key Test Scenarios
 
-#### Flujo de Matrícula y Horario
-1. Admin crea un período académico
-2. Admin crea una plantilla de curso (ej: "Matemáticas 101")
-3. Admin crea una oferta de ese curso en el período (capacity: 30)
-4. Admin crea bloques horarios (TimeSlots) y los asigna a la oferta
-5. Admin crea un docente y le asigna la oferta (TeachingAssignment)
-6. Admin crea un estudiante
-7. Estudiante se matricula en la oferta (Enrollment) - debe validar capacidad y conflictos
-8. Estudiante intenta matricularse en otra oferta con horario conflictivo -> debe mostrar error
-9. Estudiante visualiza su horario en el portal alumno
+#### Enrollment and Schedule Flow
+1. Admin creates an academic period
+2. Admin creates a course template (e.g., "Mathematics 101")
+3. Admin creates an offering of that course in the period (capacity: 30)
+4. Admin creates time blocks (TimeSlots) and assigns them to the offering
+5. Admin creates a teacher and assigns them the offering (TeachingAssignment)
+6. Admin creates a student
+7. Student enrolls in the offering (Enrollment) - must validate capacity and conflicts
+8. Student attempts to enroll in another offering with a conflicting schedule -> should show an error
+9. Student views their schedule in the student portal
 
-#### Flujo de Evaluación y Calificación
-1. Docente crea una evaluación (tipo tarea) en su sección asignada
-2. Docente establece fecha de entrega y adjunta rúbrica (opcional)
-3. Alumno ve la evaluación en su portal
-4. Alumno sube una entrega antes de la fecha límite
-5. Docente recibe notificación (por cola) y revisa la entrega
-6. Docente califica la entrega y deja feedback
-7. Alumno ve la calificación y feedback en su portal
-8. Apoderado vinculado ve la calificación en su portal consolidado
+#### Evaluation and Grading Flow
+1. Teacher creates an evaluation (assignment type) in their assigned section
+2. Teacher sets a due date and attaches a rubric (optional)
+3. Student sees the evaluation in their portal
+4. Student uploads a submission before the deadline
+5. Teacher receives a notification (queued) and reviews the submission
+6. Teacher grades the submission and leaves feedback
+7. Student sees the grade and feedback in their portal
+8. Linked guardian sees the grade in their consolidated portal
 
-#### Flujo de Notificaciones
-1. Al crear una evaluación, se dispara un event que envía notificación a alumnos inscritos (por cola)
-2. Al calificar una entrega, se dispara notificación al alumno y apoderado
-3. Verificar que lasnotificaciones llegan correctamente (pueden inspeccionarse en la tabla de notificaciones o logs)
+#### Notifications Flow
+1. When an evaluation is created, an event fires that sends a notification to enrolled students (queued)
+2. When a submission is graded, a notification is sent to the student and guardian
+3. Verify that notifications arrive correctly (can be inspected in the notifications table or logs)
 
-#### Pruebas de Multitenancy
-1. Crear dos escuelas distintas (Escuela A y Escuela B)
-2. Crear usuarios, cursos, evaluaciones en cada escuela
-3. Iniciar sesión como usuario de Escuela A y verificar que no ve datos de Escuela B
-4. Repetir para Escuela B
-5. Verificar que los roles y permisos estan aislados (un docente de A no puede gestionar secciones de B)
+#### Multitenancy Tests
+1. Create two different schools (School A and School B)
+2. Create users, courses, evaluations in each school
+3. Log in as a School A user and verify they don't see School B data
+4. Repeat for School B
+5. Verify that roles and permissions are isolated (a teacher from A cannot manage sections from B)
 
-#### Pruebas de API Móvil
-1. Autenticar vía Sanctum (token)
-2. Acceder a endpoints de cursos, evaluaciones, submissions
-3. Verificar que las respuestas respetan tenancy y políticas
-4. Intentar acceder a recursos de otra escuela -> debe retornar 403/404
+#### Mobile API Tests
+1. Authenticate via Sanctum (token)
+2. Access course, evaluation, submission endpoints
+3. Verify that responses respect tenancy and policies
+4. Attempt to access resources from another school -> should return 403/404
 
-### Datos de Prueba Recomendados
-- **Escuelas**: 2-3 instituciones con diferentes configuraciones
-- **Usuarios por escuela**: 
+### Recommended Test Data
+- **Schools**: 2-3 institutions with different configurations
+- **Users per school**:
   - 1 admin
-  - 2-3 docentes
-  - 5-10 estudiantes
-  - 2-3 apoderados (vinculados a estudiantes)
-- **Períodos académicos**: 1-2 activos, alguno histórico
-- **Cursos**: 5-10 plantillas, 2-3 ofertaciones por período
-- **Evaluaciones**: 2-3 por curso/ofrertación
-- **Entregas**: al menos una por estudiante por evaluación (con variaciones: a tiempo, tardía, sin entregar)
+  - 2-3 teachers
+  - 5-10 students
+  - 2-3 guardians (linked to students)
+- **Academic periods**: 1-2 active, some historical
+- **Courses**: 5-10 templates, 2-3 offerings per period
+- **Evaluations**: 2-3 per course/offering
+- **Submissions**: at least one per student per evaluation (with variations: on time, late, not submitted)
 
-### Herramientas de Prueba
-- **Navegadores**: Chrome/Firefox para probar interfaces web
-- **Herramientas API**: Postman o Insomnia para probar endpoints API
-- **Base de Datos**: inspeccionar directamente para validar aislazión y integridad
-- **Colas**: usar `php artisan queue:work` en desarrollo para verificar disparo de jobs
-- **Logs**: revisar `storage/logs/` para depuración
+### Testing Tools
+- **Browsers**: Chrome/Firefox to test web interfaces
+- **API Tools**: Postman or Insomnia to test API endpoints
+- **Database**: inspect directly to validate isolation and integrity
+- **Queues**: use `php artisan queue:work` in development to verify job dispatching
+- **Logs**: review `storage/logs/` for debugging
 
-## Próximos Pasos en el Desarrollo (Según PLAN.md)
+## Next Development Steps (Per PLAN.md)
 
-Tras completar las migraciones y modelos (fases 1-4), el siguiente paso es construir los paneles Filament (fase 5):
-1. Admin Panel: gestionar escuelas, usuarios, roles, períodos, plantillas, ofertaciones, matrículas
-2. Docente Panel: gestionar secciones asignadas, crear evaluaciones, calificar entregas
+After completing migrations and models (phases 1-4), the next step is to build the Filament panels (phase 5):
+1. Admin Panel: manage schools, users, roles, periods, templates, offerings, enrollments
+2. Teacher Panel: manage assigned sections, create evaluations, grade submissions
 
-Posteriormente:
-- Fase 6: Portales Livewire para alumno y apoderado
-- Fase 7: API móvil con Sanctum
-- Fase 8: Infraestructura (Redis, Scout, privés disks, logging)
-- Fase 9: Testing y calidad
-- Fase 10: Despliegue y operaciones
+Afterwards:
+- Phase 6: Livewire portals for student and guardian
+- Phase 7: Mobile API with Sanctum
+- Phase 8: Infrastructure (Redis, Scout, private disks, logging)
+- Phase 9: Testing and quality
+- Phase 10: Deployment and operations
 
-Este documento sirve como referencia para realizar pruebas de usuario válidas que cubran los flujos críticos del sistema.
+This document serves as a reference for conducting valid user tests covering the system's critical flows.
+</content>

@@ -1,133 +1,137 @@
 # OpenSchool
 
-Plataforma de gestión educativa (multitenant) construida con Laravel, orientada a administrar múltiples instituciones educativas con roles diferenciados y flujos que cubren desde matrícula hasta evaluaciones y seguimiento académico.
+Educational management platform (multitenant) built with Laravel, aimed at managing multiple educational institutions with differentiated roles and workflows covering everything from enrollment to evaluations and academic tracking.
 
-## Objetivo actual
+## Current goal
 
-El objetivo inmediato del proyecto es entregar una version funcional del aplicativo con el alcance definido en las fases 1 y 2. El API movil queda fuera del MVP actual y se considera una fase posterior.
+The immediate goal of the project is to deliver a functional version of the application within the scope defined for phases 1 and 2. The mobile API is out of scope for the current MVP and is considered a later phase.
 
-## Stack (resumen)
+## Stack (summary)
 
 - Backend: Laravel 13.x (PHP 8.3+)
 - Admin panels: Filament 5.6
-- UI reactiva: Livewire 4.3
-- RBAC: Spatie Laravel Permission (aislado por escuela)
+- Reactive UI: Livewire 4.3
+- RBAC: Spatie Laravel Permission (isolated per school)
 - Frontend: Vite + Tailwind
-- DB: PostgreSQL (objetivo), SQLite para desarrollo rapido
+- DB: PostgreSQL (target), SQLite for fast local development
 
-## Alcance del MVP
+## MVP scope
 
-El foco actual esta en una primera version funcional del sistema, priorizando:
+The current focus is on a first functional version of the system, prioritizing:
 
-- Base del dominio academico y multitenancy
-- Gestion operativa inicial desde paneles web
-- Flujos funcionales de administracion y trabajo docente
-- Base solida para evolucionar luego hacia API movil y despliegue cloud
+- Academic domain foundation and multitenancy
+- Initial operational management from web panels
+- Functional administration and teaching workflows
+- Solid foundation to later evolve toward a mobile API and cloud deployment
 
-Queda fuera del alcance inmediato:
+Out of immediate scope:
 
-- API movil productiva
-- Estrategia cloud multi-tenant definitiva
-- Escalado horizontal avanzado para multiples escuelas en una sola plataforma
+- Production-ready mobile API
+- Definitive multi-tenant cloud strategy
+- Advanced horizontal scaling for multiple schools on a single platform
 
-## Arquitectura (alto nivel)
+## Architecture (high level)
 
 ```mermaid
 flowchart LR
-  Browser[Usuario] -->|HTTP| App[OpenSchool (Laravel)]
+  Browser[User] -->|HTTP| App[OpenSchool (Laravel)]
   App --> DB[(DB: PostgreSQL)]
   App --> Queue[(Queue Worker)]
 
   subgraph UI[Interfaces]
     Admin[/Admin Panel (Filament)\/]
-    Teacher[/Docente Panel (Filament)\/]
+    Teacher[/Teacher Panel (Filament)\/]
   end
 
   App --> Admin
   App --> Teacher
 ```
 
-## Prerrequisitos
+## Prerequisites
 
 - PHP 8.3+
 - Composer
 - Node.js + npm
 - PostgreSQL
 
-Para desarrollo local tambien puede usarse SQLite cuando se necesite un arranque rapido.
+For local development, SQLite can also be used when a quick bootstrap is needed.
 
-## Instalación (desarrollo)
+## Installation (development)
 
-### Opción A: setup automático
+### Option A: automatic setup
 
 ```bash
 composer run setup
 ```
 
-Nota: el script actual de `setup` usa una base local simple para bootstrap rapido. Si vas a trabajar alineado al entorno objetivo, configura PostgreSQL en `.env` antes de migrar.
+Note: the current `setup` script uses a simple local database for a quick bootstrap. If you're working aligned with the target environment, configure PostgreSQL in the environment file before migrating.
 
-### Opción B: paso a paso
+### Option B: step by step
 
 ```bash
-cp .env.example .env
-php artisan key:generate
 composer install
 npm install
+```
+
+Copy the example environment file to the environment file expected by Laravel, then:
+
+```bash
+php artisan key:generate
 php artisan migrate
 ```
 
-Si usas PostgreSQL, configura al menos estas variables en `.env` antes de correr migraciones:
+If you use PostgreSQL, configure at least these variables in the environment file before running migrations:
 
 ```env
 DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
+DB_HOST=localhost
 DB_PORT=5432
 DB_DATABASE=openschool
 DB_USERNAME=postgres
-DB_PASSWORD=secret
+DB_PASSWORD=secret_placeholder
 ```
 
-Si necesitas un entorno efimero de desarrollo, tambien puedes usar SQLite.
+If you need an ephemeral development environment, you can also use SQLite.
 
-## Ejecutar en desarrollo
+## Running in development
 
-Levanta todos los servicios (server + queue + logs + vite):
+Start all services (server + queue + logs + vite):
 
 ```bash
 composer run dev
 ```
 
-Esto inicia:
+This starts:
 
-- Laravel dev server: `php artisan serve` (http://127.0.0.1:8000)
+- Laravel dev server: `php artisan serve` (http://localhost:8000)
 - Vite dev server: `npm run dev`
 - Queue worker: `php artisan queue:listen --tries=1 --timeout=0`
 - Log viewer: `php artisan pail --timeout=0`
 
-## Accesos (interfaces)
+## Access (interfaces)
 
-- Admin Panel (Filament): http://127.0.0.1:8000/admin
-- Docente Panel (Filament): http://127.0.0.1:8000/docente
+- Admin Panel (Filament): http://localhost:8000/admin
+- Teacher Panel (Filament): http://localhost:8000/docente
 
-Nota: Los portales Livewire de Alumno/Apoderado se consideran trabajo en progreso (ver `docs/current_state.md`).
+Note: The Student/Guardian Livewire portals are considered work in progress (see `docs/current_state.md`).
 
-## Estrategia de despliegue
+## Deployment strategy
 
-La estrategia inicial contempla una instancia por escuela en entorno self-hosted con PostgreSQL nativo. A futuro, el producto puede evolucionar a una modalidad cloud con dos caminos posibles:
+The initial strategy contemplates one instance per school in a self-hosted environment with native PostgreSQL. In the future, the product can evolve to a cloud model with two possible paths:
 
-- Una instancia por escuela: mayor aislamiento operativo y de datos
-- Multiples escuelas en una sola instancia: mejor aprovechamiento de infraestructura
+- One instance per school: greater operational and data isolation
+- Multiple schools on a single instance: better infrastructure utilization
 
-La implementacion actual ya esta orientada a multitenancy por `school_id`, lo que permite evaluar ambos modelos mas adelante sin rehacer el dominio principal.
+The current implementation is already oriented toward multitenancy via `school_id`, which allows evaluating both models later without rebuilding the core domain.
 
-## Primer usuario (admin/docente) para entrar a Filament
+## First user (admin/teacher) to access Filament
 
-El acceso a cada panel depende del rol del usuario:
+Access to each panel depends on the user's role:
 
-- Admin Panel requiere rol `admin`
-- Docente Panel requiere rol `teacher`
+- Admin Panel requires the `admin` role
+- Teacher Panel requires the `teacher` role
 
-Ejemplo rápido con Tinker (ajusta emails/contraseña):
+Quick example with Tinker (adjust emails/password):
 
 ```bash
 php artisan tinker
@@ -160,16 +164,17 @@ $user->assignRole('admin');
 php artisan test
 ```
 
-## Calidad de código
+## Code quality
 
 ```bash
 ./vendor/bin/pint
 ./vendor/bin/pint --test
 ```
 
-## Docs del proyecto
+## Project docs
 
-- Este `README.md` funciona como punto de entrada para onboarding y operacion basica
-- Guía de arranque: `docs/getting-starter.md`
-- Diseño arquitectural/funcional: `docs/architecture.md`
-- Estado actual del proyecto: `docs/current_state.md`
+- This `README.md` serves as the entry point for onboarding and basic operations
+- Getting started guide: `docs/getting-starter.md`
+- Architectural/functional design: `docs/architecture.md`
+- Current project status: `docs/current_state.md`
+</content>
