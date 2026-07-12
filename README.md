@@ -34,13 +34,13 @@ Out of immediate scope:
 
 ```mermaid
 flowchart LR
-  Browser[User] -->|HTTP| App[OpenSchool (Laravel)]
+  Browser[User] -->|HTTP| App["OpenSchool (Laravel)"]
   App --> DB[(DB: PostgreSQL)]
   App --> Queue[(Queue Worker)]
 
   subgraph UI[Interfaces]
-    Admin[/Admin Panel (Filament)\/]
-    Teacher[/Teacher Panel (Filament)\/]
+    Admin[/"Admin Panel (Filament)"/]
+    Teacher[/"Teacher Panel (Filament)"/]
   end
 
   App --> Admin
@@ -177,4 +177,4 @@ php artisan test
 - Getting started guide: `docs/getting-starter.md`
 - Architectural/functional design: `docs/architecture.md`
 - Current project status: `docs/current_state.md`
-</content>
+  </content>

@@ -34,13 +34,13 @@ Queda fuera del alcance inmediato:
 
 ```mermaid
 flowchart LR
-  Browser[Usuario] -->|HTTP| App[OpenSchool (Laravel)]
+  Browser[Usuario] -->|HTTP| App["OpenSchool (Laravel)"]
   App --> DB[(DB: PostgreSQL)]
   App --> Queue[(Queue Worker)]
 
   subgraph UI[Interfaces]
-    Admin[/Admin Panel (Filament)\/]
-    Teacher[/Docente Panel (Filament)\/]
+    Admin[/"Admin Panel (Filament)"/]
+    Teacher[/"Docente Panel (Filament)"/]
   end
 
   App --> Admin
