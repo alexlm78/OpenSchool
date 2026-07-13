@@ -1,26 +1,89 @@
 services:
-  postgres:
+  open-school-database:
     image: postgres:17-alpine
-    container_name: oschoolDB
+    container_name: open-school-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-oschool}
-      POSTGRES_USER: ${POSTGRES_USER:-oschool}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-oschool}
+      POSTGRES_DB: ${DB_DATABASE:-oschool}
+      POSTGRES_USER: ${DB_USER:-oschool}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-oschool}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_INITDB_ARGS: "--data-checksums"
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - oschool_volT1:/var/lib/postgresql/data
+      - ./database/init/postgres:/docker-entrypoint-initdb.d:ro
+    networks:
+      - oschool_net
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-oschool} -d ${POSTGRES_DB:-oschool}",
-        ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-oschool} -d ${DB_DATABASE:-oschool}" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "${POSTGRES_CPU_LIMIT:-2}"
+          memory: ${POSTGRES_MEM_LIMIT:-1g}
+        reservations:
+          cpus: "${POSTGRES_CPU_RESERVE:-0.5}"
+          memory: ${POSTGRES_MEM_RESERVE:-256m}
+    command: >
+      postgres
+      -c max_connections=${POSTGRES_MAX_CONNECTIONS:-100}
+      -c shared_buffers=${POSTGRES_SHARED_BUFFERS:-256MB}
+      -c effective_cache_size=${POSTGRES_EFFECTIVE_CACHE_SIZE:-768MB}
+      -c work_mem=${POSTGRES_WORK_MEM:-8MB}
+      -c maintenance_work_mem=${POSTGRES_MAINTENANCE_WORK_MEM:-64MB}
+      -c wal_buffers=16MB
+      -c checkpoint_completion_target=0.9
+      -c random_page_cost=1.1
+      -c log_min_duration_statement=${POSTGRES_LOG_MIN_DURATION:-500}
+
+  redis-school:
+    image: docker.io/library/redis:7-alpine
+    container_name: oschool-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+      - ./database/conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - oschool_net
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+      --requirepass ${REDIS_PASSWORD}
+      --maxmemory ${REDIS_MAXMEMORY:-256mb}
+      --maxmemory-policy ${REDIS_MAXMEMORY_POLICY:-allkeys-lru}
+      --appendonly yes
+      --appendfsync everysec
+      --save 900 1
+      --save 300 10
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD} ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "${REDIS_CPU_LIMIT:-1}"
+          memory: ${REDIS_MEM_LIMIT:-384m}
+        reservations:
+          cpus: "${REDIS_CPU_RESERVE:-0.25}"
+          memory: ${REDIS_MEM_RESERVE:-128m}
+
+networks:
+  oschool_net:
+    driver: bridge
+    name: open-school-net
 
 volumes:
   oschool_volT1:
+    name: oschool-volT1-data
+  redis_data:
+    name: oschool-redis-data
