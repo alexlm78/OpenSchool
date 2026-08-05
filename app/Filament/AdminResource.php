@@ -11,7 +11,7 @@ abstract class AdminResource extends Resource
     {
         $user = Auth::user();
 
-        return $user instanceof \App\Models\User && $user->hasRole('admin');
+        return $user instanceof \App\Models\User && $user->hasAdministrativeRole();
     }
 
     public static function canCreate(): bool

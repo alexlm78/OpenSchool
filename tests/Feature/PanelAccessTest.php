@@ -160,6 +160,22 @@ class PanelAccessTest extends TestCase
         $this->assertNotSame(403, $response->getStatusCode());
     }
 
+    public function test_super_admin_can_access_admin_panel(): void
+    {
+        app(PermissionRegistrar::class)->setPermissionsTeamId(null);
+
+        $superAdmin = User::query()
+            ->where('email', 'kreaker@kreaker.net')
+            ->firstOrFail();
+
+        $this->assertNull($superAdmin->school_id);
+        $this->assertTrue($superAdmin->isSuperAdmin());
+
+        $response = $this->actingAs($superAdmin)->get('/admin');
+
+        $this->assertNotSame(403, $response->getStatusCode());
+    }
+
     public function test_teacher_can_access_docente_panel(): void
     {
         $school = $this->createSchool();

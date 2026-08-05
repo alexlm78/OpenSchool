@@ -10,6 +10,10 @@ final class SubmissionPolicy
 {
     public function grade(User $user, Submission $submission): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
         if ($user->school_id === null) {
             return false;
         }
@@ -18,7 +22,7 @@ final class SubmissionPolicy
             return false;
         }
 
-        if ($user->hasRole('admin')) {
+        if ($user->hasAdministrativeRole()) {
             return true;
         }
 

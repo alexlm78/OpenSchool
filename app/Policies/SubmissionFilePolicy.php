@@ -10,6 +10,10 @@ final class SubmissionFilePolicy
 {
     public function download(User $user, SubmissionFile $submissionFile): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
         if ($user->school_id === null) {
             return false;
         }
@@ -27,7 +31,7 @@ final class SubmissionFilePolicy
             return true;
         }
 
-        if ($user->hasRole('admin')) {
+        if ($user->hasAdministrativeRole()) {
             return true;
         }
 

@@ -1,7 +1,7 @@
 services:
   open-school-database:
     image: postgres:17-alpine
-    container_name: open-school-db
+    container_name: oschool-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_DATABASE:-oschool}
@@ -17,7 +17,11 @@ services:
     networks:
       - oschool_net
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-oschool} -d ${DB_DATABASE:-oschool}" ]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER:-oschool} -d ${DB_DATABASE:-oschool}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -49,7 +53,7 @@ services:
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
-      - redis_data:/data
+      - oschool_redis:/data
       - ./database/conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
     networks:
       - oschool_net
@@ -80,10 +84,10 @@ services:
 networks:
   oschool_net:
     driver: bridge
-    name: open-school-net
+    name: oschool-net
 
 volumes:
   oschool_volT1:
     name: oschool-volT1-data
-  redis_data:
+  oschool_redis:
     name: oschool-redis-data

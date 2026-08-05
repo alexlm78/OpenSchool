@@ -51,7 +51,7 @@ flowchart LR
 
 - PHP 8.3+
 - Composer
-- Node.js + npm
+- Node.js 22 LTS + npm
 - PostgreSQL
 
 For local development, SQLite can also be used when a quick bootstrap is needed.
@@ -76,6 +76,7 @@ npm install
 Copy the example environment file to the environment file expected by Laravel, then:
 
 ```bash
+cp env.example .env
 php artisan key:generate
 php artisan migrate
 ```
@@ -84,7 +85,7 @@ If you use PostgreSQL, configure at least these variables in the environment fil
 
 ```env
 DB_CONNECTION=pgsql
-DB_HOST=localhost
+DB_HOST=127.0.0.1
 DB_PORT=5432
 DB_DATABASE=openschool
 DB_USERNAME=postgres
@@ -103,15 +104,15 @@ composer run dev
 
 This starts:
 
-- Laravel dev server: `php artisan serve` (http://localhost:8000)
+- Laravel dev server: `php artisan serve --host=127.0.0.1 --port=8000` (http://127.0.0.1:8000)
 - Vite dev server: `npm run dev`
-- Queue worker: `php artisan queue:listen --tries=1 --timeout=0`
+- Queue worker: `php artisan queue:work --tries=1 --timeout=0`
 - Log viewer: `php artisan pail --timeout=0`
 
 ## Access (interfaces)
 
-- Admin Panel (Filament): http://localhost:8000/admin
-- Teacher Panel (Filament): http://localhost:8000/docente
+- Admin Panel (Filament): http://127.0.0.1:8000/admin
+- Teacher Panel (Filament): http://127.0.0.1:8000/docente
 
 Note: The Student/Guardian Livewire portals are considered work in progress (see `docs/current_state.md`).
 

@@ -28,7 +28,7 @@ class EvaluationForm
                                 return $query->whereRaw('1 = 0');
                             }
 
-                            if ($user->hasRole('admin')) {
+                            if ($user->hasAdministrativeRole()) {
                                 return $query;
                             }
 

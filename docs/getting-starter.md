@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - PHP 8.3+
-- Node.js & npm
+- Node.js 22 LTS & npm
 - Composer
 - PostgreSQL
 - Docker or Podman (optional, recommended for local DB)
@@ -11,7 +11,7 @@
 ## Environment Setup
 
 1. Copy the example environment file and generate an application key:
-   cp .env.example .env
+   cp env.example .env
    php artisan key:generate
 2. Start PostgreSQL locally:
    docker compose up -d
@@ -25,7 +25,7 @@
 
 ### Default database configuration
 
-The project now uses PostgreSQL by default through `.env.example`:
+The project now uses PostgreSQL by default through `env.example`:
 
 - DB_CONNECTION=pgsql
 - DB_HOST=127.0.0.1
@@ -44,15 +44,15 @@ Run all services with one command:
 composer run dev
 
 #### This starts:
-- Laravel dev server (php artisan serve)
+- Laravel dev server (php artisan serve --host=127.0.0.1 --port=8000)
 - Vite dev server (npm run dev)
-- Queue worker (php artisan queue:listen --tries=1 --timeout=0) in background
+- Queue worker (php artisan queue:work --tries=1 --timeout=0) in background
 
 #### Individual Services
 
-- Laravel dev server: php artisan serve (http://127.0.0.1:8000)
+- Laravel dev server: php artisan serve --host=127.0.0.1 --port=8000 (http://127.0.0.1:8000)
 - Vite dev server: npm run dev
-- Queue worker: php artisan queue:listen --tries=1 --timeout=0
+- Queue worker: php artisan queue:work --tries=1 --timeout=0
 - Log viewer: php artisan pail --timeout=0
 
 ### Accessing Interfaces

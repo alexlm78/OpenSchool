@@ -25,7 +25,7 @@ final class EnsureAdminRole
             app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($schoolId);
         }
 
-        if (! $user->hasRole('admin')) {
+        if (! $user->hasAdministrativeRole()) {
             abort(403);
         }
 

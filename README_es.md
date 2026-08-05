@@ -51,7 +51,7 @@ flowchart LR
 
 - PHP 8.3+
 - Composer
-- Node.js + npm
+- Node.js 22 LTS + npm
 - PostgreSQL
 
 Para desarrollo local tambien puede usarse SQLite cuando se necesite un arranque rapido.
@@ -69,7 +69,7 @@ Nota: el script actual de `setup` usa una base local simple para bootstrap rapid
 ### Opción B: paso a paso
 
 ```bash
-cp .env.example .env
+cp env.example .env
 php artisan key:generate
 composer install
 npm install
@@ -99,9 +99,9 @@ composer run dev
 
 Esto inicia:
 
-- Laravel dev server: `php artisan serve` (http://127.0.0.1:8000)
+- Laravel dev server: `php artisan serve --host=127.0.0.1 --port=8000` (http://127.0.0.1:8000)
 - Vite dev server: `npm run dev`
-- Queue worker: `php artisan queue:listen --tries=1 --timeout=0`
+- Queue worker: `php artisan queue:work --tries=1 --timeout=0`
 - Log viewer: `php artisan pail --timeout=0`
 
 ## Accesos (interfaces)
