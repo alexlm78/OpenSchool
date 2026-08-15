@@ -22,29 +22,38 @@ class SubmissionsTable
         return $table
             ->columns([
                 TextColumn::make('school_id')
+                    ->label(__('School ID'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('evaluation_id')
+                    ->label(__('Evaluation'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('student_id')
+                    ->label(__('Student'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('submitted_at')
+                    ->label(__('Submitted At'))
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->label(__('Status'))
                     ->searchable(),
                 TextColumn::make('attempt')
+                    ->label(__('Attempt'))
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('late_flag')
+                    ->label(__('Late Flag'))
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label(__('Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label(__('Updated At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -54,12 +63,14 @@ class SubmissionsTable
             ])
             ->recordActions([
                 Action::make('grade')
-                    ->label('Grade')
+                    ->label(__('Grade'))
                     ->authorize('grade')
                     ->form([
                         TextInput::make('score')
+                            ->label(__('Score'))
                             ->numeric(),
                         Textarea::make('feedback')
+                            ->label(__('Feedback'))
                             ->columnSpanFull(),
                     ])
                     ->action(function (Submission $record, array $data): void {

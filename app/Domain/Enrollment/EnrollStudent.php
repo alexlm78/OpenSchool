@@ -35,7 +35,7 @@ final class EnrollStudent
                 ->exists();
 
             if ($alreadyEnrolled) {
-                throw new EnrollmentAlreadyExists('Student is already enrolled in this course offering.');
+                throw new EnrollmentAlreadyExists(__('Student is already enrolled in this course offering.'));
             }
 
             $capacity = (int) ($courseOffering->capacity ?? 0);
@@ -47,7 +47,7 @@ final class EnrollStudent
                     ->count();
 
                 if ($activeCount >= $capacity) {
-                    throw new EnrollmentCapacityExceeded('Course offering capacity reached.');
+                    throw new EnrollmentCapacityExceeded(__('Course offering capacity reached.'));
                 }
             }
 
@@ -58,7 +58,7 @@ final class EnrollStudent
                 foreach ($newOfferingSlots as $newSlot) {
                     foreach ($studentSlots as $existingSlot) {
                         if ($this->overlaps($newSlot, $existingSlot)) {
-                            throw new EnrollmentScheduleConflict('Schedule conflict detected for this enrollment.');
+                            throw new EnrollmentScheduleConflict(__('Schedule conflict detected for this enrollment.'));
                         }
                     }
                 }

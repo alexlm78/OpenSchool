@@ -15,25 +15,32 @@ class GradesTable
         return $table
             ->columns([
                 TextColumn::make('school_id')
+                    ->label(__('School ID'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('evaluation_id')
+                    ->label(__('Evaluation'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('student_id')
+                    ->label(__('Student'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('score')
+                    ->label(__('Score'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('graded_by')
+                    ->label(__('Graded By'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label(__('Updated At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

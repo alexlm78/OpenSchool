@@ -24,6 +24,16 @@ class CourseOfferingResource extends DocenteResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Course Offering');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Course Offerings');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return CourseOfferingForm::configure($schema);

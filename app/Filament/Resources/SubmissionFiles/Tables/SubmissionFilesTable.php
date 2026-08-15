@@ -16,25 +16,33 @@ class SubmissionFilesTable
         return $table
             ->columns([
                 TextColumn::make('school_id')
+                    ->label(__('School ID'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('submission_id')
+                    ->label(__('Submission'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('file_name')
+                    ->label(__('File Name'))
                     ->searchable(),
                 TextColumn::make('file_path')
+                    ->label(__('File Path'))
                     ->searchable(),
                 TextColumn::make('file_type')
+                    ->label(__('File Type'))
                     ->searchable(),
                 TextColumn::make('file_size')
+                    ->label(__('File Size'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label(__('Updated At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -13,19 +13,25 @@ class SubmissionFileForm
         return $schema
             ->components([
                 Select::make('school_id')
+                    ->label(__('School'))
                     ->relationship('school', 'name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 TextInput::make('submission_id')
+                    ->label(__('Submission'))
                     ->required()
                     ->numeric(),
                 TextInput::make('file_name')
+                    ->label(__('File Name'))
                     ->required(),
                 TextInput::make('file_path')
+                    ->label(__('File Path'))
                     ->required(),
-                TextInput::make('file_type'),
+                TextInput::make('file_type')
+                    ->label(__('File Type')),
                 TextInput::make('file_size')
+                    ->label(__('File Size'))
                     ->numeric(),
             ]);
     }

@@ -14,15 +14,19 @@ class TimeSlotForm
         return $schema
             ->components([
                 Select::make('school_id')
+                    ->label(__('School'))
                     ->relationship('school', 'name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 TextInput::make('day_of_week')
+                    ->label(__('Day Of Week'))
                     ->required(),
                 TimePicker::make('start_time')
+                    ->label(__('Start Time'))
                     ->required(),
                 TimePicker::make('end_time')
+                    ->label(__('End Time'))
                     ->required(),
             ]);
     }

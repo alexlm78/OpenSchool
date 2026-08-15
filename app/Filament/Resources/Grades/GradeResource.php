@@ -20,6 +20,16 @@ class GradeResource extends AdminResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Grade');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Grades');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return GradeForm::configure($schema);

@@ -14,14 +14,18 @@ class CourseTemplateForm
         return $schema
             ->components([
                 Select::make('school_id')
+                    ->label(__('School'))
                     ->relationship('school', 'name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 TextInput::make('name')
+                    ->label(__('Name'))
                     ->required(),
-                TextInput::make('code'),
+                TextInput::make('code')
+                    ->label(__('Code')),
                 Textarea::make('description')
+                    ->label(__('Description'))
                     ->columnSpanFull(),
             ]);
     }

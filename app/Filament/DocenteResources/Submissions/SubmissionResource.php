@@ -23,6 +23,16 @@ class SubmissionResource extends DocenteResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Submission');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Submissions');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return SubmissionForm::configure($schema);

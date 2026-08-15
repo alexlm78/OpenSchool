@@ -24,6 +24,16 @@ class EvaluationResource extends DocenteResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Evaluation');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Evaluations');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return EvaluationForm::configure($schema);

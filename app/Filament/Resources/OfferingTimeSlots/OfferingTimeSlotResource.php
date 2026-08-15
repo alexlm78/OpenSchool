@@ -20,6 +20,16 @@ class OfferingTimeSlotResource extends AdminResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Offering Time Slot');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Offering Time Slots');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return OfferingTimeSlotForm::configure($schema);

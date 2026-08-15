@@ -18,6 +18,7 @@ class EvaluationForm
         return $schema
             ->components([
                 Select::make('course_offering_id')
+                    ->label(__('Course Offering'))
                     ->required()
                     ->relationship(
                         'courseOffering',
@@ -46,35 +47,45 @@ class EvaluationForm
                     ->searchable()
                     ->preload()
                     ->getOptionLabelFromRecordUsing(fn (\App\Models\CourseOffering $record): string => trim(sprintf(
-                        'Oferta #%d - Periodo %s - Curso %s - Sección %s',
+                        __('Offer #%d - Period %s - Course %s - Section %s'),
                         $record->id,
                         (string) $record->academic_period_id,
                         (string) $record->course_template_id,
                         $record->section_name ?? '-',
                     ))),
                 TextInput::make('title')
+                    ->label(__('Title'))
                     ->required(),
                 Textarea::make('description')
+                    ->label(__('Description'))
                     ->columnSpanFull(),
                 TextInput::make('max_score')
+                    ->label(__('Max Score'))
                     ->required()
                     ->numeric()
                     ->default(100),
                 TextInput::make('weight')
+                    ->label(__('Weight'))
                     ->required()
                     ->numeric()
                     ->default(1),
-                DateTimePicker::make('due_at'),
-                DateTimePicker::make('published_at'),
+                DateTimePicker::make('due_at')
+                    ->label(__('Due Date')),
+                DateTimePicker::make('published_at')
+                    ->label(__('Published At')),
                 Toggle::make('allow_late_submission')
+                    ->label(__('Allow Late Submission'))
                     ->required()
                     ->default(false),
                 TextInput::make('late_penalty_percent')
+                    ->label(__('Late Penalty Percent'))
                     ->required()
                     ->numeric()
                     ->default(0),
-                DateTimePicker::make('late_until'),
-                TextInput::make('file_requirements'),
+                DateTimePicker::make('late_until')
+                    ->label(__('Late Until')),
+                TextInput::make('file_requirements')
+                    ->label(__('File Requirements')),
             ]);
     }
 }

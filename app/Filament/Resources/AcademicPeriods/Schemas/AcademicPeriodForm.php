@@ -14,17 +14,22 @@ class AcademicPeriodForm
         return $schema
             ->components([
                 Select::make('school_id')
+                    ->label(__('School'))
                     ->relationship('school', 'name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 TextInput::make('name')
+                    ->label(__('Name'))
                     ->required(),
                 TextInput::make('type')
+                    ->label(__('Type'))
                     ->required(),
                 DatePicker::make('starts_at')
+                    ->label(__('Starts At'))
                     ->required(),
                 DatePicker::make('ends_at')
+                    ->label(__('Ends At'))
                     ->required(),
             ]);
     }

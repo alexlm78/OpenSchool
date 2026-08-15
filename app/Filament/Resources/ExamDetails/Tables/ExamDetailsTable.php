@@ -15,28 +15,37 @@ class ExamDetailsTable
         return $table
             ->columns([
                 TextColumn::make('school_id')
+                    ->label(__('School ID'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('evaluationable_type')
+                    ->label(__('Evaluationable Type'))
                     ->searchable(),
                 TextColumn::make('evaluationable_id')
+                    ->label(__('Evaluationable ID'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('exam_date')
+                    ->label(__('Exam Date'))
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('duration_minutes')
+                    ->label(__('Duration Minutes'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('location')
+                    ->label(__('Location'))
                     ->searchable(),
                 TextColumn::make('modality')
+                    ->label(__('Modality'))
                     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label(__('Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label(__('Updated At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -20,6 +20,16 @@ class TimeSlotResource extends AdminResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Time Slot');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Time Slots');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return TimeSlotForm::configure($schema);

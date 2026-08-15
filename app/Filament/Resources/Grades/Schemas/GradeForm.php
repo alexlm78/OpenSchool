@@ -14,21 +14,27 @@ class GradeForm
         return $schema
             ->components([
                 Select::make('school_id')
+                    ->label(__('School'))
                     ->relationship('school', 'name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 TextInput::make('evaluation_id')
+                    ->label(__('Evaluation'))
                     ->required()
                     ->numeric(),
                 TextInput::make('student_id')
+                    ->label(__('Student'))
                     ->required()
                     ->numeric(),
                 TextInput::make('score')
+                    ->label(__('Score'))
                     ->numeric(),
                 Textarea::make('feedback')
+                    ->label(__('Feedback'))
                     ->columnSpanFull(),
                 TextInput::make('graded_by')
+                    ->label(__('Graded By'))
                     ->numeric(),
             ]);
     }

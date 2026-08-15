@@ -14,20 +14,27 @@ class ExamDetailsForm
         return $schema
             ->components([
                 Select::make('school_id')
+                    ->label(__('School'))
                     ->relationship('school', 'name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 TextInput::make('evaluationable_type')
+                    ->label(__('Evaluationable Type'))
                     ->required(),
                 TextInput::make('evaluationable_id')
+                    ->label(__('Evaluationable ID'))
                     ->required()
                     ->numeric(),
-                DateTimePicker::make('exam_date'),
+                DateTimePicker::make('exam_date')
+                    ->label(__('Exam Date')),
                 TextInput::make('duration_minutes')
+                    ->label(__('Duration Minutes'))
                     ->numeric(),
-                TextInput::make('location'),
+                TextInput::make('location')
+                    ->label(__('Location')),
                 TextInput::make('modality')
+                    ->label(__('Modality'))
                     ->required()
                     ->default('in-person'),
             ]);

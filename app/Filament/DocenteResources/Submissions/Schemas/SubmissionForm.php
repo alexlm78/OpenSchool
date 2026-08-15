@@ -15,25 +15,32 @@ class SubmissionForm
         return $schema
             ->components([
                 Select::make('school_id')
+                    ->label(__('School ID'))
                     ->relationship('school', 'name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 TextInput::make('evaluation_id')
+                    ->label(__('Evaluation'))
                     ->required()
                     ->numeric(),
                 TextInput::make('student_id')
+                    ->label(__('Student'))
                     ->required()
                     ->numeric(),
-                DateTimePicker::make('submitted_at'),
+                DateTimePicker::make('submitted_at')
+                    ->label(__('Submitted At')),
                 TextInput::make('status')
+                    ->label(__('Status'))
                     ->required()
                     ->default('draft'),
                 TextInput::make('attempt')
+                    ->label(__('Attempt'))
                     ->required()
                     ->numeric()
                     ->default(1),
                 Toggle::make('late_flag')
+                    ->label(__('Late Flag'))
                     ->required(),
             ]);
     }

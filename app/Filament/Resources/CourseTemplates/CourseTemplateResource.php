@@ -20,6 +20,16 @@ class CourseTemplateResource extends AdminResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Course Template');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Course Templates');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return CourseTemplateForm::configure($schema);

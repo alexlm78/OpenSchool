@@ -22,6 +22,16 @@ class TeachingAssignmentResource extends DocenteResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Teaching Assignment');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Teaching Assignments');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return TeachingAssignmentForm::configure($schema);

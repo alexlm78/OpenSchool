@@ -15,20 +15,26 @@ class ProjectDetailsForm
         return $schema
             ->components([
                 Select::make('school_id')
+                    ->label(__('School'))
                     ->relationship('school', 'name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 TextInput::make('evaluationable_type')
+                    ->label(__('Evaluationable Type'))
                     ->required(),
                 TextInput::make('evaluationable_id')
+                    ->label(__('Evaluationable ID'))
                     ->required()
                     ->numeric(),
                 Toggle::make('group_project')
+                    ->label(__('Group Project'))
                     ->required(),
                 TextInput::make('max_group_size')
+                    ->label(__('Max Group Size'))
                     ->numeric(),
                 Textarea::make('rubric')
+                    ->label(__('Rubric'))
                     ->columnSpanFull(),
             ]);
     }

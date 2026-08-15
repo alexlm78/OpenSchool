@@ -20,6 +20,16 @@ class AssignmentDetailsResource extends AdminResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Assignment Details');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Assignment Details');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return AssignmentDetailsForm::configure($schema);

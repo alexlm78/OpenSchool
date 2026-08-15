@@ -20,6 +20,16 @@ class StudentResource extends AdminResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('Student');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Students');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return StudentForm::configure($schema);

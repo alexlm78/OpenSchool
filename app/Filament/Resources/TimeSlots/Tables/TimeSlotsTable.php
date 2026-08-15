@@ -15,21 +15,27 @@ class TimeSlotsTable
         return $table
             ->columns([
                 TextColumn::make('school_id')
+                    ->label(__('School ID'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('day_of_week')
+                    ->label(__('Day Of Week'))
                     ->searchable(),
                 TextColumn::make('start_time')
+                    ->label(__('Start Time'))
                     ->time()
                     ->sortable(),
                 TextColumn::make('end_time')
+                    ->label(__('End Time'))
                     ->time()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label(__('Updated At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
