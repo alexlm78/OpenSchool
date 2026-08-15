@@ -12,11 +12,36 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'school_id'])]
+#[Fillable(['name', 'email', 'password', 'school_id', 'locale'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends TenantAuthenticatable implements FilamentUser
 {
     use HasFactory, Notifiable, HasRoles;
+
+    public function preferredLocale(): ?string
+    {
+        if ($this->locale && $this->isAvailableLocale($this->locale)) {
+            return $this->locale;
+        }
+
+        return null;
+    }
+
+    public function setLocale(string $locale): bool
+    {
+        if (! $this->isAvailableLocale($locale)) {
+            return false;
+        }
+
+        $this->locale = $locale;
+
+        return $this->save();
+    }
+
+    protected function isAvailableLocale(string $locale): bool
+    {
+        return array_key_exists($locale, (array) config('app.available_locales', []));
+    }
 
     public function isSuperAdmin(): bool
     {

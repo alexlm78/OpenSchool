@@ -15,22 +15,42 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label(__('Name'))
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email address')
+                    ->label(__('Email Address'))
                     ->searchable(),
+                TextColumn::make('locale')
+                    ->label(__('Language'))
+                    ->formatStateUsing(static function ($state): string {
+                        if (! $state) {
+                            return (string) __('System default');
+                        }
+                        $meta = config("app.available_locales.{$state}");
+                        if (! $meta) {
+                            return (string) $state;
+                        }
+
+                        return "{$meta['flag']} {$meta['native']}";
+                    })
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('email_verified_at')
+                    ->label(__('Email Verified At'))
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('Created At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label(__('Updated At'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('school_id')
+                    ->label(__('School ID'))
                     ->numeric()
                     ->sortable(),
             ])
