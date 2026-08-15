@@ -47,6 +47,14 @@
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve --host=127.0.0.1 --port=8000\" \"php artisan queue:work --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
         ],
+        "infra": [
+            "Composer\\Config::disableProcessTimeout",
+            "sh -lc 'podman machine start >/dev/null 2>&1 || true; if podman container exists oschool-db >/dev/null 2>&1 && podman container exists oschool-redis >/dev/null 2>&1; then podman start oschool-db oschool-redis; else podman compose up -d; fi'"
+        ],
+        "infra:down": [
+            "Composer\\Config::disableProcessTimeout",
+            "sh -lc 'podman machine start >/dev/null 2>&1 || true; if podman container exists oschool-db >/dev/null 2>&1 && podman container exists oschool-redis >/dev/null 2>&1; then podman stop oschool-db oschool-redis >/dev/null 2>&1 || true; else podman compose down >/dev/null 2>&1 || true; fi'"
+        ],
         "test": [
             "@php artisan config:clear --ansi @no_additional_args",
             "@php artisan test"
