@@ -119,4 +119,3 @@ updated_at: 2026-05-31
 - Notifications: events/listeners/jobs and idempotency strategy.
 - Observability: correlation id in logs and propagation to jobs.
 - Quality gates: Pint + PHPStan/Psalm + CI.
-</content>

@@ -76,4 +76,3 @@ Ver docs/architecture_es.md para los flujos de prueba detallados (matrícula, ev
 
 - Corregir estilo: ./vendor/bin/pint
 - Verificar estilo: ./vendor/bin/pint --test
-</content>
