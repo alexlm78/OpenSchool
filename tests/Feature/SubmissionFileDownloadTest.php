@@ -164,12 +164,6 @@ class SubmissionFileDownloadTest extends TestCase
 
         app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($school->id);
 
-        Role::create([
-            'name' => 'teacher',
-            'guard_name' => 'web',
-            'school_id' => $school->id,
-        ]);
-
         $period = AcademicPeriod::create([
             'school_id' => $school->id,
             'name' => '2026 Semestre 1',

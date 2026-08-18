@@ -231,12 +231,7 @@ class PanelAccessTest extends TestCase
 
     private function seedRolesForSchool(int $schoolId): void
     {
-        app(PermissionRegistrar::class)->setPermissionsTeamId($schoolId);
-
-        Role::create(['name' => 'admin', 'guard_name' => 'web', 'school_id' => $schoolId]);
-        Role::create(['name' => 'teacher', 'guard_name' => 'web', 'school_id' => $schoolId]);
-        Role::create(['name' => 'student', 'guard_name' => 'web', 'school_id' => $schoolId]);
-        Role::create(['name' => 'guardian', 'guard_name' => 'web', 'school_id' => $schoolId]);
+        app(\App\Support\DefaultRoleSeeder::class)->seedForSchool($schoolId, force: false);
     }
 
     private function createUserForSchool(int $schoolId): User&Authenticatable

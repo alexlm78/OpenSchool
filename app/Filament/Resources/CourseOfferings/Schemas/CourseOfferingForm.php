@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\CourseOfferings\Schemas;
 
 use App\Models\CourseOffering;
+use App\Models\School;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Validation\ValidationException;
 
 class CourseOfferingForm
 {
@@ -60,7 +62,41 @@ class CourseOfferingForm
                     ->required()
                     ->numeric()
                     ->minValue(0)
-                    ->default(0),
+                    ->default(0)
+                    ->helperText(static function (callable $get): string {
+                        $schoolId = $get('school_id');
+                        if (! is_numeric($schoolId)) {
+                            return __('Select a school first to view the valid capacity range.');
+                        }
+                        $school = School::query()->find((int) $schoolId);
+                        if (! $school instanceof School) {
+                            return __('Select a school first to view the valid capacity range.');
+                        }
+
+                        return __('School capacity policy: :policy. 0 = unlimited (if allowed).', [
+                            'policy' => $school->capacityValidationMessage(),
+                        ]);
+                    })
+                    ->rules([
+                        static function (callable $get): \Closure {
+                            return static function (string $attribute, $value, \Closure $fail) use ($get): void {
+                                $schoolId = $get('school_id');
+                                if (! is_numeric($schoolId)) {
+                                    return;
+                                }
+                                $school = School::query()->find((int) $schoolId);
+                                if (! $school instanceof School) {
+                                    return;
+                                }
+                                $capacity = (int) $value;
+                                if (! $school->isCourseOfferingCapacityValid($capacity)) {
+                                    $fail(__('Invalid capacity for this school (:policy).', [
+                                        'policy' => $school->capacityValidationMessage(),
+                                    ]));
+                                }
+                            };
+                        },
+                    ]),
                 TextInput::make('section_name')
                     ->label(__('Section Name'))
                     ->placeholder(__('e.g. A, B, Sección 1, Morning')),

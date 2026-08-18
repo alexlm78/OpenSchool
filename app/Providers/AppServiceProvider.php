@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\School;
+use App\Observers\SchoolObserver;
 use App\Services\ExtendedTranslationLoader;
 use App\Tenancy\TenantContext;
 use Illuminate\Translation\Translator;
@@ -36,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        School::observe(SchoolObserver::class);
+
         // Ensure that if translation services were already resolved by the time
         // register() ran (some deferred providers materialize late), we forcibly
         // swap the in-container instances to the ExtendedTranslationLoader.
@@ -48,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->resolved('translator')) {
             $previous = $this->app['translator'];
             $locale = $previous instanceof Translator ? $previous->getLocale() : (string) config('app.locale');
-            $fallback = $previous instanceof Translator ? $previous->getFallback() : (string) config('app.fallback_locale');
+            $fallback = $previous instanceof Translator ? $previous->getFallbackLocale() : (string) config('app.fallback_locale');
 
             $translator = new Translator($loader, $locale);
             $translator->setFallback($fallback);

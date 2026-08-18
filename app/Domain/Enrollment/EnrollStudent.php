@@ -4,9 +4,11 @@ namespace App\Domain\Enrollment;
 
 use App\Domain\Enrollment\Exceptions\EnrollmentAlreadyExists;
 use App\Domain\Enrollment\Exceptions\EnrollmentCapacityExceeded;
+use App\Domain\Enrollment\Exceptions\EnrollmentCapacityPolicyViolation;
 use App\Domain\Enrollment\Exceptions\EnrollmentScheduleConflict;
 use App\Models\CourseOffering;
 use App\Models\Enrollment;
+use App\Models\School;
 use App\Models\TimeSlot;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Carbon;
@@ -28,6 +30,8 @@ final class EnrollStudent
                 ->whereKey($courseOfferingId)
                 ->firstOrFail();
 
+            $school = School::query()->findOrFail($schoolId);
+
             $alreadyEnrolled = Enrollment::query()
                 ->where('school_id', $schoolId)
                 ->where('student_id', $studentId)
@@ -38,18 +42,7 @@ final class EnrollStudent
                 throw new EnrollmentAlreadyExists(__('Student is already enrolled in this course offering.'));
             }
 
-            $capacity = (int) ($courseOffering->capacity ?? 0);
-            if ($capacity > 0) {
-                $activeCount = Enrollment::query()
-                    ->where('school_id', $schoolId)
-                    ->where('course_offering_id', $courseOfferingId)
-                    ->where('status', 'active')
-                    ->count();
-
-                if ($activeCount >= $capacity) {
-                    throw new EnrollmentCapacityExceeded(__('Course offering capacity reached.'));
-                }
-            }
+            $this->validateCapacityPolicy($school, $courseOffering, $schoolId);
 
             $newOfferingSlots = $this->getOfferingTimeSlots($schoolId, $courseOfferingId);
             if ($newOfferingSlots !== []) {
@@ -72,6 +65,56 @@ final class EnrollStudent
                 'enrolled_at' => ($enrolledAt ?? now())->toDateString(),
             ]);
         });
+    }
+
+    private function validateCapacityPolicy(School $school, CourseOffering $courseOffering, int $schoolId): void
+    {
+        $offeringCapacity = (int) ($courseOffering->capacity ?? 0);
+        $schoolMax = $school->getMaxStudentsPerCourse();
+        $allowUnlimited = $school->isUnlimitedCapacityAllowed();
+
+        if ($offeringCapacity === 0 && ! $allowUnlimited) {
+            throw EnrollmentCapacityPolicyViolation::unlimitedNotAllowed();
+        }
+
+        $effectiveMax = $this->resolveEffectiveMaxCapacity($offeringCapacity, $schoolMax);
+
+        if ($effectiveMax === null) {
+            return;
+        }
+
+        $activeCount = Enrollment::query()
+            ->where('school_id', $schoolId)
+            ->where('course_offering_id', $courseOffering->getKey())
+            ->where('status', 'active')
+            ->count();
+
+        if ($activeCount >= $effectiveMax) {
+            throw new EnrollmentCapacityExceeded(__('Course offering capacity reached (:count / :max).', [
+                'count' => $activeCount,
+                'max' => $effectiveMax,
+            ]));
+        }
+    }
+
+    private function resolveEffectiveMaxCapacity(int $offeringCapacity, int $schoolMax): ?int
+    {
+        $offer = $offeringCapacity > 0 ? $offeringCapacity : null;
+        $max = $schoolMax > 0 ? $schoolMax : null;
+
+        if ($offer === null && $max === null) {
+            return null;
+        }
+
+        if ($offer === null) {
+            return $max;
+        }
+
+        if ($max === null) {
+            return $offer;
+        }
+
+        return min($offer, $max);
     }
 
     /**

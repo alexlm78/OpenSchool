@@ -32,7 +32,6 @@ class SubmissionGradingPolicyTest extends TestCase
         app(TenantContext::class)->setSchoolId($school->id);
 
         app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($school->id);
-        Role::create(['name' => 'teacher', 'guard_name' => 'web', 'school_id' => $school->id]);
 
         $period = AcademicPeriod::create([
             'school_id' => $school->id,
@@ -93,7 +92,6 @@ class SubmissionGradingPolicyTest extends TestCase
         app(TenantContext::class)->setSchoolId($school->id);
 
         app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($school->id);
-        Role::create(['name' => 'teacher', 'guard_name' => 'web', 'school_id' => $school->id]);
 
         $period = AcademicPeriod::create([
             'school_id' => $school->id,

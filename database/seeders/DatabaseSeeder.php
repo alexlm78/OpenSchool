@@ -7,6 +7,7 @@ use App\Models\School;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Support\DefaultRoleSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
@@ -29,6 +30,8 @@ class DatabaseSeeder extends Seeder
             ],
         );
 
+        app(DefaultRoleSeeder::class)->seedForSchool($school, force: true);
+
         /** @var PermissionRegistrar $permissionRegistrar */
         $permissionRegistrar = app(PermissionRegistrar::class);
         $permissionRegistrar->forgetCachedPermissions();
@@ -38,7 +41,6 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'admin',
                 'guard_name' => 'web',
-                'school_id' => $school->id,
             ],
         );
 
@@ -46,7 +48,6 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'teacher',
                 'guard_name' => 'web',
-                'school_id' => $school->id,
             ],
         );
 
@@ -54,7 +55,6 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'student',
                 'guard_name' => 'web',
-                'school_id' => $school->id,
             ],
         );
 
@@ -62,7 +62,6 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'guardian',
                 'guard_name' => 'web',
-                'school_id' => $school->id,
             ],
         );
 
