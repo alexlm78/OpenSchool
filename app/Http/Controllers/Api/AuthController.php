@@ -35,7 +35,7 @@ final class AuthController extends Controller
 
         $schoolId = $user->getAttributeValue('school_id');
         if ($schoolId !== null) {
-            PermissionRegistrar::setPermissionsTeamId((int) $schoolId);
+            app(PermissionRegistrar::class)->setPermissionsTeamId((int) $schoolId);
         }
 
         $deviceName = (string) ($credentials['device_name'] ?? $request->userAgent() ?? 'api-device');
@@ -91,14 +91,12 @@ final class AuthController extends Controller
         $user = $request->user();
 
         $currentAccessToken = $user->currentAccessToken();
-        if ($currentAccessToken !== null) {
-            $currentAccessToken->delete();
-        }
+        $currentAccessToken->delete();
 
         return new JsonResponse([
             'data' => [
                 'message' => __('auth.logged_out'),
-                'revoked_token_id' => $currentAccessToken?->getKey(),
+                'revoked_token_id' => $currentAccessToken->getKey(),
             ],
         ], JsonResponse::HTTP_OK);
     }

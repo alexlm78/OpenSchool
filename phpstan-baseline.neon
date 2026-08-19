@@ -169,6 +169,54 @@ parameters:
 			path: app/Filament/Resources/TeachingAssignments/Schemas/TeachingAssignmentForm.php
 
 		-
+			message: '#^Relation ''courseOffering'' is not found in App\\Models\\Enrollment model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Api/Alumno/EnrollmentController.php
+
+		-
+			message: '#^Parameter \#1 \$relations of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Evaluation\>\:\:with\(\) expects array\<array\|\(Closure\(Illuminate\\Database\\Eloquent\\Relations\\Relation\<\*, \*, \*\>\)\: mixed\)\|string\>\|string, array\{0\: ''courseOffering\.courseTemplate'', 1\: ''courseOffering\.academicPeriod'', submissions\: static\-Closure\(Illuminate\\Database\\Eloquent\\Relations\\HasMany\)\: void, grades\: static\-Closure\(Illuminate\\Database\\Eloquent\\Relations\\HasMany\)\: void\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Alumno/EvaluationController.php
+
+		-
+			message: '#^Relation ''courseOffering'' is not found in App\\Models\\Evaluation model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Api/Alumno/EvaluationController.php
+
+		-
+			message: '#^Relation ''grades'' is not found in App\\Models\\Evaluation model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Api/Alumno/EvaluationController.php
+
+		-
+			message: '#^Relation ''submissions'' is not found in App\\Models\\Evaluation model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Api/Alumno/EvaluationController.php
+
+		-
+			message: '#^Relation ''evaluation'' is not found in App\\Models\\Grade model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Api/Alumno/GradeController.php
+
+		-
+			message: '#^Instanceof between Illuminate\\Http\\UploadedFile and Illuminate\\Http\\UploadedFile will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/Alumno/SubmissionController.php
+
+		-
+			message: '#^Relation ''evaluation'' is not found in App\\Models\\Submission model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Api/Alumno/SubmissionController.php
+
+		-
 			message: '#^Call to an undefined method App\\Models\\User\:\:createToken\(\)\.$#'
 			identifier: method.notFound
 			count: 1

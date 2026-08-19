@@ -4,10 +4,23 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Enrollment;
+use App\Models\Evaluation;
+use App\Models\Grade;
 use App\Models\School;
+use App\Models\Submission;
+use App\Models\User;
 use App\Observers\SchoolObserver;
+use App\Policies\EnrollmentPolicy;
+use App\Policies\EvaluationPolicy;
+use App\Policies\GradePolicy;
+use App\Policies\SubmissionPolicy;
 use App\Services\ExtendedTranslationLoader;
 use App\Tenancy\TenantContext;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Translation\Translator;
 
@@ -41,6 +54,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         School::observe(SchoolObserver::class);
+
+        $this->registerPolicies();
+        $this->configureRateLimiters();
 
         // Ensure that if translation services were already resolved by the time
         // register() ran (some deferred providers materialize late), we forcibly
@@ -78,5 +94,34 @@ class AppServiceProvider extends ServiceProvider
             $paths,
             storage_path('app/lang')
         );
+    }
+
+    private function registerPolicies(): void
+    {
+        Gate::policy(Enrollment::class, EnrollmentPolicy::class);
+        Gate::policy(Evaluation::class, EvaluationPolicy::class);
+        Gate::policy(Submission::class, SubmissionPolicy::class);
+        Gate::policy(Grade::class, GradePolicy::class);
+    }
+
+    private function configureRateLimiters(): void
+    {
+        RateLimiter::for('api', static function (Request $request): Limit {
+            /** @var User|null $user */
+            $user = $request->user();
+
+            return Limit::perMinute(120)->by($user?->getKey() !== null
+                ? 'u-'.$user->getKey()
+                : 'ip-'.$request->ip(),
+            );
+        });
+
+        RateLimiter::for('api.auth', static function (Request $request): Limit {
+            return Limit::perMinute(10)
+                ->by('login-'.strtolower((string) $request->input('email', '')).'|ip-'.$request->ip())
+                ->response(static fn () => response()->json([
+                    'message' => 'Demasiados intentos de inicio de sesión. Inténtalo más tarde.',
+                ], 429));
+        });
     }
 }
