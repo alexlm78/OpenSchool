@@ -1,0 +1,156 @@
+name: Tests + Quality Gates
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  code-quality:
+    name: "Static Analysis + Style (PHP 8.3)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: bcmath, ctype, curl, dom, fileinfo, gd, intl, json, mbstring, opcache, openssl, pdo, pdo_pgsql, pgsql, phar, redis, session, tokenizer, xml, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-8.3-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-8.3-
+
+      - name: Install composer dependencies
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+        run: composer install --prefer-dist --no-progress --no-interaction --no-suggest --optimize-autoloader
+
+      - name: Verify Laravel Pint code style
+        run: composer lint
+
+      - name: PHPStan static analysis (Level 5)
+        run: composer analyse
+
+  tests:
+    name: "Tests (PHP 8.3, PostgreSQL 17)"
+    runs-on: ubuntu-latest
+    needs: [code-quality]
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: oschool_test
+          POSTGRES_USER: oschool
+          POSTGRES_PASSWORD: oschool_secret_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U oschool -d oschool_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: bcmath, ctype, curl, dom, fileinfo, gd, intl, json, mbstring, opcache, openssl, pdo, pdo_pgsql, pgsql, phar, redis, session, tokenizer, xml, zip
+          coverage: pcov
+          tools: composer:v2
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-8.3-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-8.3-
+
+      - name: Install composer dependencies
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+        run: composer install --prefer-dist --no-progress --no-interaction --no-suggest --optimize-autoloader
+
+      - name: Prepare Laravel environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+
+      - name: Run migrations and seeders
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: oschool_test
+          DB_USERNAME: oschool
+          DB_PASSWORD: oschool_secret_ci
+          REDIS_HOST: 127.0.0.1
+          REDIS_PORT: 6379
+          REDIS_PASSWORD: null
+          CACHE_DRIVER: array
+          QUEUE_CONNECTION: sync
+          SESSION_DRIVER: array
+        run: php artisan migrate --seed --force
+
+      - name: Run test suite (Pest / PHPUnit)
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: oschool_test
+          DB_USERNAME: oschool
+          DB_PASSWORD: oschool_secret_ci
+          REDIS_HOST: 127.0.0.1
+          REDIS_PORT: 6379
+          REDIS_PASSWORD: null
+          CACHE_DRIVER: array
+          QUEUE_CONNECTION: sync
+          SESSION_DRIVER: array
+        run: composer test
+
+      - name: Upload coverage artifact (if generated)
+        if: failure() || success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-or-logs
+          path: |
+            storage/logs
+          if-no-files-found: ignore
