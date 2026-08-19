@@ -6,6 +6,7 @@ namespace App\Filament\AlumnoResources\Enrollments\Tables;
 
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class EnrollmentsTable
@@ -46,13 +47,21 @@ class EnrollmentsTable
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label(__('Status'))
+                    ->options([
+                        'active' => __('Active'),
+                        'completed' => __('Completed'),
+                        'dropped' => __('Dropped'),
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make(),
             ])
             ->toolbarActions([
                 //
-            ]);
+            ])
+            ->defaultSort('enrolled_at', 'desc')
+            ->paginationPageOptions([10, 25, 50]);
     }
 }

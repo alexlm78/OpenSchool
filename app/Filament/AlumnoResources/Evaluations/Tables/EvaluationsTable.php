@@ -10,6 +10,7 @@ use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,18 +20,38 @@ class EvaluationsTable
     {
         return $table
             ->columns([
+                TextColumn::make('courseOffering.courseTemplate.name')
+                    ->label(__('Course'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('title')
                     ->label(__('Title'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(50),
                 TextColumn::make('due_at')
                     ->label(__('Due Date'))
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color(static function (mixed $state): string {
+                        if ($state === null) {
+                            return 'gray';
+                        }
+                        $hoursLeft = now()->diffInHours($state, false);
+
+                        return match (true) {
+                            $hoursLeft <= 24 => 'danger',
+                            $hoursLeft <= 72 => 'warning',
+                            default => 'info',
+                        };
+                    }),
                 TextColumn::make('published_at')
                     ->label(__('Published At'))
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('max_score')
                     ->label(__('Max Score'))
                     ->numeric()
@@ -38,7 +59,8 @@ class EvaluationsTable
                 TextColumn::make('weight')
                     ->label(__('Weight'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('submission_status')
                     ->label(__('Status'))
                     ->badge()
@@ -80,7 +102,38 @@ class EvaluationsTable
                     }),
             ])
             ->filters([
-                //
+                TernaryFilter::make('submitted')
+                    ->label(__('Has Submission'))
+                    ->placeholder(__('All'))
+                    ->trueLabel(__('Submitted'))
+                    ->falseLabel(__('Not Submitted Yet'))
+                    ->queries(
+                        true: static function ($query): void {
+                            $studentId = Auth::id();
+                            if (! $studentId) {
+                                $query->whereRaw('1 = 0');
+
+                                return;
+                            }
+                            $query->whereExists(function ($q) use ($studentId): void {
+                                $q->from('submissions')
+                                    ->whereColumn('submissions.evaluation_id', 'evaluations.id')
+                                    ->where('submissions.student_id', $studentId);
+                            });
+                        },
+                        false: static function ($query): void {
+                            $studentId = Auth::id();
+                            if (! $studentId) {
+                                return;
+                            }
+                            $query->whereDoesntHave('submissions', static function ($q) use ($studentId): void {
+                                $q->where('student_id', $studentId);
+                            });
+                        },
+                        blank: static function ($query): void {
+                            //
+                        },
+                    ),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -103,6 +156,8 @@ class EvaluationsTable
             ])
             ->toolbarActions([
                 //
-            ]);
+            ])
+            ->defaultSort('due_at', 'asc')
+            ->paginationPageOptions([10, 25, 50]);
     }
 }

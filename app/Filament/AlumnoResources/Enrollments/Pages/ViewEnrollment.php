@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\AlumnoResources\Enrollments\Pages;
 
 use App\Filament\AlumnoResources\Enrollments\EnrollmentResource;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\TextEntry;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 
