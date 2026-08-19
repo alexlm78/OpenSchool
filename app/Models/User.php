@@ -9,6 +9,9 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
@@ -87,24 +90,29 @@ class User extends TenantAuthenticatable implements FilamentUser
     /**
      * Get the school that the user belongs to.
      */
-    public function school()
+    public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
-    public function studentProfile()
+    public function studentProfile(): HasOne
     {
         return $this->hasOne(Student::class, 'user_id');
     }
 
-    public function teacherProfile()
+    public function teacherProfile(): HasOne
     {
         return $this->hasOne(Teacher::class, 'user_id');
     }
 
-    public function guardianProfile()
+    public function guardianProfile(): HasOne
     {
         return $this->hasOne(Guardian::class, 'user_id');
+    }
+
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class, 'student_id');
     }
 
     protected function isAvailableLocale(string $locale): bool

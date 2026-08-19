@@ -14,11 +14,13 @@ use App\Observers\SchoolObserver;
 use App\Policies\EnrollmentPolicy;
 use App\Policies\EvaluationPolicy;
 use App\Policies\GradePolicy;
+use App\Policies\NotificationPolicy;
 use App\Policies\SubmissionPolicy;
 use App\Services\ExtendedTranslationLoader;
 use App\Tenancy\TenantContext;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -102,6 +104,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Evaluation::class, EvaluationPolicy::class);
         Gate::policy(Submission::class, SubmissionPolicy::class);
         Gate::policy(Grade::class, GradePolicy::class);
+        Gate::policy(DatabaseNotification::class, NotificationPolicy::class);
     }
 
     private function configureRateLimiters(): void

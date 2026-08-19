@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Evaluation extends TenantModel
@@ -26,12 +28,12 @@ class Evaluation extends TenantModel
         'published_at',
     ];
 
-    public function school()
+    public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
-    public function courseOffering()
+    public function courseOffering(): BelongsTo
     {
         return $this->belongsTo(CourseOffering::class);
     }
@@ -41,12 +43,12 @@ class Evaluation extends TenantModel
         return $this->morphTo();
     }
 
-    public function submissions()
+    public function submissions(): HasMany
     {
         return $this->hasMany(Submission::class);
     }
 
-    public function grades()
+    public function grades(): HasMany
     {
         return $this->hasMany(Grade::class);
     }

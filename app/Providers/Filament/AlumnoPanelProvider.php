@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Alumno\Pages\Notifications as AlumnoNotificationsPage;
+use App\Filament\Widgets\ActiveEnrollmentsWidget;
+use App\Filament\Widgets\GradeAverageWidget;
+use App\Filament\Widgets\PendingSubmissionsWidget;
+use App\Filament\Widgets\RecentGradesWidget;
+use App\Filament\Widgets\RecentNotificationsWidget;
+use App\Filament\Widgets\UpcomingEvaluationsWidget;
 use App\Http\Middleware\EnsureStudentRole;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\SetTenantFromAuth;
@@ -16,7 +23,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -36,14 +42,20 @@ class AlumnoPanelProvider extends PanelProvider
                 'primary' => Color::Emerald,
             ])
             ->discoverResources(in: app_path('Filament/AlumnoResources'), for: 'App\Filament\AlumnoResources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->discoverPages(in: app_path('Filament/Alumno/Pages'), for: 'App\Filament\Alumno\Pages')
             ->pages([
                 Dashboard::class,
+                AlumnoNotificationsPage::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
-                FilamentInfoWidget::class,
+                GradeAverageWidget::class,
+                ActiveEnrollmentsWidget::class,
+                PendingSubmissionsWidget::class,
+                RecentGradesWidget::class,
+                UpcomingEvaluationsWidget::class,
+                RecentNotificationsWidget::class,
             ])
             ->renderHook(
                 'panels::topbar.end',
