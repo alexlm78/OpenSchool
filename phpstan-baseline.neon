@@ -1,0 +1,235 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to function is_int\(\) with int\<0, max\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Events/GradePublished.php
+
+		-
+			message: '#^Method App\\Events\\GradePublished\:\:getStudentUserId\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Events/GradePublished.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Events/GradePublished.php
+
+		-
+			message: '#^Invoking callable on an unknown class Filament\\Forms\\Get\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Filament/AlumnoResources/Submissions/Schemas/SubmissionForm.php
+
+		-
+			message: '#^Invoking callable on an unknown class Filament\\Forms\\Set\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Filament/AlumnoResources/Submissions/Schemas/SubmissionForm.php
+
+		-
+			message: '#^Parameter \$get of anonymous function has invalid type Filament\\Forms\\Get\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Filament/AlumnoResources/Submissions/Schemas/SubmissionForm.php
+
+		-
+			message: '#^Parameter \$set of anonymous function has invalid type Filament\\Forms\\Set\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Filament/AlumnoResources/Submissions/Schemas/SubmissionForm.php
+
+		-
+			message: '#^Parameter \$set of method App\\Filament\\AlumnoResources\\Submissions\\Schemas\\SubmissionForm\:\:recalculateLateFlag\(\) has invalid type Filament\\Forms\\Set\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Filament/AlumnoResources/Submissions/Schemas/SubmissionForm.php
+
+		-
+			message: '#^Relation ''students'' is not found in App\\Models\\Guardian model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/ApoderadoResource.php
+
+		-
+			message: '#^Method App\\Filament\\ApoderadoResources\\Enrollments\\EnrollmentResource\:\:buildStudentFilterOptions\(\) should return array\<string, string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/ApoderadoResources/Enrollments/EnrollmentResource.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Student model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/ApoderadoResources/Enrollments/EnrollmentResource.php
+
+		-
+			message: '#^Method App\\Filament\\ApoderadoResources\\Evaluations\\EvaluationResource\:\:buildCourseOfferingOptions\(\) should return array\<string, string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/ApoderadoResources/Evaluations/EvaluationResource.php
+
+		-
+			message: '#^Method App\\Filament\\ApoderadoResources\\Evaluations\\EvaluationResource\:\:buildStudentFilterOptions\(\) should return array\<string, string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/ApoderadoResources/Evaluations/EvaluationResource.php
+
+		-
+			message: '#^Relation ''academicPeriod'' is not found in App\\Models\\CourseOffering model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/ApoderadoResources/Evaluations/EvaluationResource.php
+
+		-
+			message: '#^Relation ''courseTemplate'' is not found in App\\Models\\CourseOffering model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/ApoderadoResources/Evaluations/EvaluationResource.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Student model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/ApoderadoResources/Evaluations/EvaluationResource.php
+
+		-
+			message: '#^Call to protected static method linkedStudentUserIds\(\) of class App\\Filament\\ApoderadoResource\.$#'
+			identifier: staticMethod.protected
+			count: 2
+			path: app/Filament/ApoderadoResources/Evaluations/Tables/EvaluationsTable.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Student model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Filament/ApoderadoResources/Evaluations/Tables/EvaluationsTable.php
+
+		-
+			message: '#^Method App\\Filament\\ApoderadoResources\\Grades\\GradeResource\:\:buildCourseOfferingOptions\(\) should return array\<string, string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/ApoderadoResources/Grades/GradeResource.php
+
+		-
+			message: '#^Method App\\Filament\\ApoderadoResources\\Grades\\GradeResource\:\:buildEvaluationOptions\(\) should return array\<string, string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/ApoderadoResources/Grades/GradeResource.php
+
+		-
+			message: '#^Method App\\Filament\\ApoderadoResources\\Grades\\GradeResource\:\:buildStudentFilterOptions\(\) should return array\<string, string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/ApoderadoResources/Grades/GradeResource.php
+
+		-
+			message: '#^Relation ''academicPeriod'' is not found in App\\Models\\CourseOffering model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/ApoderadoResources/Grades/GradeResource.php
+
+		-
+			message: '#^Relation ''courseTemplate'' is not found in App\\Models\\CourseOffering model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/ApoderadoResources/Grades/GradeResource.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Student model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/ApoderadoResources/Grades/GradeResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Filament/DocenteResources/TeachingAssignments/Schemas/TeachingAssignmentForm.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Filament/Resources/Enrollments/Schemas/EnrollmentForm.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Filament/Resources/OfferingTimeSlots/Schemas/OfferingTimeSlotForm.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Filament/Resources/TeachingAssignments/Schemas/TeachingAssignmentForm.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\User\:\:createToken\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/AuthController.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\User\:\:currentAccessToken\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/AuthController.php
+
+		-
+			message: '#^Static call to instance method Spatie\\Permission\\PermissionRegistrar\:\:setPermissionsTeamId\(\)\.$#'
+			identifier: method.staticCall
+			count: 1
+			path: app/Http/Controllers/Api/AuthController.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Models\\User and ''setLocale'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Controllers/LocaleController.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Models\\User and ''preferredLocale'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Middleware/SetLocale.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Models\\User and ''setLocale'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Middleware/SetLocale.php
+
+		-
+			message: '#^Call to function is_int\(\) with int\<0, max\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Listeners/LogEvaluationPublishedNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>max_score" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Listeners/LogGradePublishedNotification.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Translation\\Translator\:\:getFallbackLocale\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Support/DefaultRoleSeeder.php

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 class Guardian extends TenantModel
@@ -24,7 +26,7 @@ class Guardian extends TenantModel
     public function students()
     {
         return $this->belongsToMany(Student::class, 'guardian_student')
-                    ->withPivot('school_id')
-                    ->withTimestamps();
+            ->withPivot('school_id')
+            ->withTimestamps();
     }
 }

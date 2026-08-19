@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\Submissions\Tables;
 
 use App\Models\Grade;
 use App\Models\Submission;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -75,7 +78,7 @@ class SubmissionsTable
                     ])
                     ->action(function (Submission $record, array $data): void {
                         $user = Auth::user();
-                        if (! $user instanceof \App\Models\User) {
+                        if (! $user instanceof User) {
                             abort(403);
                         }
 

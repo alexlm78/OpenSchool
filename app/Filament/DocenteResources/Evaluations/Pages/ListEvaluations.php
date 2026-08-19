@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\Evaluations\Pages;
 
 use App\Filament\DocenteResources\Evaluations\EvaluationResource;

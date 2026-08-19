@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support;
 
 use App\Models\School;
@@ -12,11 +14,9 @@ final class DefaultRoleSeeder
 
     public function __construct(
         private readonly PermissionRegistrar $permissionRegistrar,
-    ) {
-    }
+    ) {}
 
     /**
-     * @param  School|int  $school
      * @return array{created: int, updated: int, skipped: int}
      */
     public function seedForSchool(School|int $school, string $guard = 'web', bool $force = false): array

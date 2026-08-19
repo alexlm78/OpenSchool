@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\ApoderadoResources\Enrollments\Pages;
 
 use App\Filament\ApoderadoResources\Enrollments\EnrollmentResource;
@@ -82,7 +84,7 @@ class ViewEnrollment extends ViewRecord
                                             $weightedScore += ($score / $maxScore) * $weight;
                                         }
                                     } else {
-                                        $line .= __("Not graded yet") . " (weight: {$weight})";
+                                        $line .= __('Not graded yet')." (weight: {$weight})";
                                     }
                                     $lines[] = $line;
                                 }
@@ -90,7 +92,7 @@ class ViewEnrollment extends ViewRecord
                                 $summary = implode("\n", $lines);
                                 if ($totalWeight > 0) {
                                     $final = round(($weightedScore / $totalWeight) * 100, 2);
-                                    $summary .= "\n\n" . __("Weighted Progress") . ": {$final}% ({$totalWeight} total weight)";
+                                    $summary .= "\n\n".__('Weighted Progress').": {$final}% ({$totalWeight} total weight)";
                                 }
 
                                 return $summary;

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\SubmissionFiles\Tables;
 
+use App\Models\SubmissionFile;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -54,7 +57,7 @@ class SubmissionFilesTable
                 Action::make('download')
                     ->label('Download')
                     ->authorize('download')
-                    ->url(fn (\App\Models\SubmissionFile $record): string => route('submission-files.download', $record))
+                    ->url(fn (SubmissionFile $record): string => route('submission-files.download', $record))
                     ->openUrlInNewTab(),
                 EditAction::make(),
             ])

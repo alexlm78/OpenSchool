@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\SetLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Http\Middleware\SetLocale;
 
 class LocaleController extends Controller
 {
@@ -12,7 +14,7 @@ class LocaleController extends Controller
     {
         $available = array_keys((array) config('app.available_locales', []));
 
-        if (! in_array($locale, $available, true)) {
+        if (! \in_array($locale, $available, true)) {
             $locale = (string) config('app.locale', 'en');
         }
 

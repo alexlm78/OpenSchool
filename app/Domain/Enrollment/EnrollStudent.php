@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain\Enrollment;
 
 use App\Domain\Enrollment\Exceptions\EnrollmentAlreadyExists;
@@ -18,8 +20,7 @@ final class EnrollStudent
 {
     public function __construct(
         private readonly TenantContext $tenantContext,
-    ) {
-    }
+    ) {}
 
     public function enroll(int $studentId, int $courseOfferingId, ?string $status = 'active', ?Carbon $enrolledAt = null): Enrollment
     {

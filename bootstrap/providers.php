@@ -1,10 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Providers\AppServiceProvider;
+use App\Providers\EventServiceProvider;
+use App\Providers\Filament\AdminPanelProvider;
+use App\Providers\Filament\AlumnoPanelProvider;
+use App\Providers\Filament\ApoderadoPanelProvider;
+use App\Providers\Filament\DocentePanelProvider;
+
 return [
-    App\Providers\EventServiceProvider::class,
-    App\Providers\AppServiceProvider::class,
-    App\Providers\Filament\AdminPanelProvider::class,
-    App\Providers\Filament\DocentePanelProvider::class,
-    App\Providers\Filament\AlumnoPanelProvider::class,
-    App\Providers\Filament\ApoderadoPanelProvider::class,
+    EventServiceProvider::class,
+    AppServiceProvider::class,
+    AdminPanelProvider::class,
+    DocentePanelProvider::class,
+    AlumnoPanelProvider::class,
+    ApoderadoPanelProvider::class,
 ];

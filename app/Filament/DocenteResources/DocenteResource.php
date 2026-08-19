@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources;
 
+use App\Models\User;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,7 +14,7 @@ abstract class DocenteResource extends Resource
     {
         $user = Auth::user();
 
-        return $user instanceof \App\Models\User && $user->hasRole('teacher');
+        return $user instanceof User && $user->hasRole('teacher');
     }
 
     public static function canCreate(): bool

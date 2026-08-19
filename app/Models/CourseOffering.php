@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 class CourseOffering extends TenantModel
@@ -11,13 +13,6 @@ class CourseOffering extends TenantModel
         'capacity',
         'section_name',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'capacity' => 'integer',
-        ];
-    }
 
     public function school()
     {
@@ -57,5 +52,12 @@ class CourseOffering extends TenantModel
     public function evaluations()
     {
         return $this->hasMany(Evaluation::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'capacity' => 'integer',
+        ];
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\CourseOfferings\Pages;
 
 use App\Filament\DocenteResources\CourseOfferings\CourseOfferingResource;

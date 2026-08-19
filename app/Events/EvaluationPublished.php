@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Events;
 
 use App\Models\Evaluation;
@@ -18,8 +20,7 @@ final class EvaluationPublished
         public readonly Evaluation $evaluation,
         public readonly ?School $school = null,
         public readonly bool $isRepublish = false,
-    ) {
-    }
+    ) {}
 
     public function getSchoolId(): ?int
     {
@@ -34,6 +35,6 @@ final class EvaluationPublished
 
         $id = $school->getKey();
 
-        return is_int($id) ? $id : null;
+        return \is_int($id) ? $id : null;
     }
 }

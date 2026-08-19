@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\AcademicPeriod;
@@ -12,9 +14,10 @@ use App\Models\SubmissionFile;
 use App\Models\TeachingAssignment;
 use App\Models\User;
 use App\Tenancy\TenantContext;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 class SubmissionFileDownloadTest extends TestCase
@@ -162,7 +165,7 @@ class SubmissionFileDownloadTest extends TestCase
         $school = School::create(['name' => 'Escuela A', 'email' => 'escuela-a@example.com']);
         app(TenantContext::class)->setSchoolId($school->id);
 
-        app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($school->id);
+        app(PermissionRegistrar::class)->setPermissionsTeamId($school->id);
 
         $period = AcademicPeriod::create([
             'school_id' => $school->id,
@@ -299,7 +302,7 @@ class SubmissionFileDownloadTest extends TestCase
             'school_id' => $schoolId,
         ]);
 
-        if (! $user instanceof \Illuminate\Contracts\Auth\Authenticatable) {
+        if (! $user instanceof Authenticatable) {
             throw new \RuntimeException('Expected a User that implements Authenticatable.');
         }
 

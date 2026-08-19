@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\AlumnoResources\Submissions\Pages;
 
 use App\Filament\AlumnoResources\Submissions\SubmissionResource;
@@ -93,9 +95,9 @@ class ViewSubmission extends ViewRecord
 
                                 $maxScore = (float) $record->evaluation->max_score;
                                 $lines = [];
-                                $lines[] = __("Score") . ": {$grade->score}/{$maxScore}";
+                                $lines[] = __('Score').": {$grade->score}/{$maxScore}";
                                 if ($grade->feedback) {
-                                    $lines[] = __("Feedback") . ": {$grade->feedback}";
+                                    $lines[] = __('Feedback').": {$grade->feedback}";
                                 }
 
                                 return implode("\n", $lines);
@@ -118,10 +120,10 @@ class ViewSubmission extends ViewRecord
 
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
+        $pow = min($pow, \count($units) - 1);
 
         $bytes /= (1 << (10 * $pow));
 
-        return round($bytes, $precision) . ' ' . $units[$pow];
+        return round($bytes, $precision).' '.$units[$pow];
     }
 }

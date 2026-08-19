@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\AlumnoResources\Evaluations;
 
 use App\Filament\AlumnoResource;
@@ -13,7 +15,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Support\Facades\Auth;
 
 class EvaluationResource extends AlumnoResource
 {

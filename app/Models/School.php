@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -22,16 +24,6 @@ class School extends Model
     protected $dates = [
         'email_verified_at',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'min_students_per_course' => 'integer',
-            'max_students_per_course' => 'integer',
-            'allow_unlimited_capacity' => 'boolean',
-        ];
-    }
 
     public function isUnlimitedCapacityAllowed(): bool
     {
@@ -85,5 +77,15 @@ class School extends Model
         }
 
         return implode(', ', $parts);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'min_students_per_course' => 'integer',
+            'max_students_per_course' => 'integer',
+            'allow_unlimited_capacity' => 'boolean',
+        ];
     }
 }

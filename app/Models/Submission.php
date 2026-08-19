@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 class Submission extends TenantModel
@@ -13,15 +15,6 @@ class Submission extends TenantModel
         'attempt',
         'late_flag',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'submitted_at' => 'datetime',
-            'attempt' => 'integer',
-            'late_flag' => 'boolean',
-        ];
-    }
 
     public function school()
     {
@@ -46,5 +39,14 @@ class Submission extends TenantModel
     public function grades()
     {
         return $this->hasMany(Grade::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'submitted_at' => 'datetime',
+            'attempt' => 'integer',
+            'late_flag' => 'boolean',
+        ];
     }
 }

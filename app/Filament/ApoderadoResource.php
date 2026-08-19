@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament;
 
 use App\Models\Guardian;
 use App\Models\Student;
+use App\Models\User;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +16,7 @@ abstract class ApoderadoResource extends Resource
     {
         $user = Auth::user();
 
-        return $user instanceof \App\Models\User && $user->hasRole('guardian');
+        return $user instanceof User && $user->hasRole('guardian');
     }
 
     public static function canCreate(): bool
@@ -60,7 +63,7 @@ abstract class ApoderadoResource extends Resource
     {
         $user = Auth::user();
 
-        return $user instanceof \App\Models\User ? (int) $user->getAuthIdentifier() : null;
+        return $user instanceof User ? (int) $user->getAuthIdentifier() : null;
     }
 
     /**
@@ -83,7 +86,7 @@ abstract class ApoderadoResource extends Resource
         }
 
         return $profile->students
-            ->map(static fn (Student $s): ?int => filter_var($s->user_id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null)
+            ->map(static fn (Student $s): ?int => filter_var($s->user_id, \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null)
             ->filter(static fn (?int $id): bool => $id !== null)
             ->values()
             ->all();

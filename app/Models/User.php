@@ -1,22 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password', 'school_id', 'locale'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends TenantAuthenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     public function preferredLocale(): ?string
     {
@@ -38,11 +40,6 @@ class User extends TenantAuthenticatable implements FilamentUser
         return $this->save();
     }
 
-    protected function isAvailableLocale(string $locale): bool
-    {
-        return array_key_exists($locale, (array) config('app.available_locales', []));
-    }
-
     public function isSuperAdmin(): bool
     {
         if (! $this->exists) {
@@ -57,11 +54,11 @@ class User extends TenantAuthenticatable implements FilamentUser
         $modelMorphKey = $columnNames['model_morph_key'] ?? 'model_id';
 
         return DB::table($modelHasRolesTable)
-            ->join($rolesTable, $rolesTable . '.id', '=', $modelHasRolesTable . '.' . $pivotRole)
-            ->where($modelHasRolesTable . '.model_type', self::class)
-            ->where($modelHasRolesTable . '.' . $modelMorphKey, $this->getKey())
-            ->where($rolesTable . '.name', 'super_admin')
-            ->where($rolesTable . '.guard_name', 'web')
+            ->join($rolesTable, $rolesTable.'.id', '=', $modelHasRolesTable.'.'.$pivotRole)
+            ->where($modelHasRolesTable.'.model_type', self::class)
+            ->where($modelHasRolesTable.'.'.$modelMorphKey, $this->getKey())
+            ->where($rolesTable.'.name', 'super_admin')
+            ->where($rolesTable.'.guard_name', 'web')
             ->exists();
     }
 
@@ -72,9 +69,9 @@ class User extends TenantAuthenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        $schoolId = filter_var($this->school_id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if (is_int($schoolId) && class_exists(\Spatie\Permission\PermissionRegistrar::class)) {
-            app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($schoolId);
+        $schoolId = filter_var($this->school_id, \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (\is_int($schoolId) && class_exists(PermissionRegistrar::class)) {
+            app(PermissionRegistrar::class)->setPermissionsTeamId($schoolId);
         }
 
         return match ($panel->getId()) {
@@ -84,19 +81,6 @@ class User extends TenantAuthenticatable implements FilamentUser
             'apoderado' => $this->hasRole('guardian'),
             default => false,
         };
-    }
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
     }
 
     /**
@@ -120,5 +104,23 @@ class User extends TenantAuthenticatable implements FilamentUser
     public function guardianProfile()
     {
         return $this->hasOne(Guardian::class, 'user_id');
+    }
+
+    protected function isAvailableLocale(string $locale): bool
+    {
+        return \array_key_exists($locale, (array) config('app.available_locales', []));
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 }

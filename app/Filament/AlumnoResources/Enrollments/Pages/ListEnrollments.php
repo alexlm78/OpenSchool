@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\AlumnoResources\Enrollments\Pages;
 
 use App\Filament\AlumnoResources\Enrollments\EnrollmentResource;

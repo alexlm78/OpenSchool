@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 class Grade extends TenantModel
@@ -12,16 +14,6 @@ class Grade extends TenantModel
         'feedback',
         'graded_by',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'evaluation_id' => 'integer',
-            'student_id' => 'integer',
-            'score' => 'decimal:2',
-            'graded_by' => 'integer',
-        ];
-    }
 
     public function school()
     {
@@ -41,5 +33,15 @@ class Grade extends TenantModel
     public function grader()
     {
         return $this->belongsTo(User::class, 'graded_by');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'evaluation_id' => 'integer',
+            'student_id' => 'integer',
+            'score' => 'decimal:2',
+            'graded_by' => 'integer',
+        ];
     }
 }

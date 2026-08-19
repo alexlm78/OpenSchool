@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Scopes\TenancyScope;
@@ -10,10 +12,10 @@ abstract class TenantModel extends Model
 {
     protected static function booted(): void
     {
-        static::addGlobalScope(new TenancyScope());
+        static::addGlobalScope(new TenancyScope);
 
         static::creating(function (Model $model): void {
-            if (! $model->getTable() || ! array_key_exists('school_id', $model->getAttributes())) {
+            if (! $model->getTable() || ! \array_key_exists('school_id', $model->getAttributes())) {
                 return;
             }
 

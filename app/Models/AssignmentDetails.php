@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 class AssignmentDetails extends TenantModel
@@ -15,6 +17,11 @@ class AssignmentDetails extends TenantModel
         'late_until',
     ];
 
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
+
     protected function casts(): array
     {
         return [
@@ -23,10 +30,5 @@ class AssignmentDetails extends TenantModel
             'late_penalty_percent' => 'integer',
             'late_until' => 'datetime',
         ];
-    }
-
-    public function school()
-    {
-        return $this->belongsTo(School::class);
     }
 }

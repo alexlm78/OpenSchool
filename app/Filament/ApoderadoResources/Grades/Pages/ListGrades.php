@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\ApoderadoResources\Grades\Pages;
 
 use App\Filament\ApoderadoResources\Grades\GradeResource;

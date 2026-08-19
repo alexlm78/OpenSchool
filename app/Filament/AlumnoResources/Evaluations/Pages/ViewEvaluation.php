@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\AlumnoResources\Evaluations\Pages;
 
 use App\Filament\AlumnoResources\Evaluations\EvaluationResource;
@@ -55,6 +57,7 @@ class ViewEvaluation extends ViewRecord
                                 if ($evaluationable && isset($evaluationable->file_requirements)) {
                                     return (string) $evaluationable->file_requirements;
                                 }
+
                                 return __('No specific file requirements.');
                             })
                             ->columnSpanFull(),
@@ -66,6 +69,7 @@ class ViewEvaluation extends ViewRecord
                                 if ($evaluationable && isset($evaluationable->allow_late_submission)) {
                                     return $evaluationable->allow_late_submission ? 'yes' : 'no';
                                 }
+
                                 return 'no';
                             })
                             ->color(fn (string $state): string => $state === 'yes' ? 'success' : 'danger')
@@ -77,6 +81,7 @@ class ViewEvaluation extends ViewRecord
                                 if ($evaluationable && isset($evaluationable->late_penalty_percent)) {
                                     return "{$evaluationable->late_penalty_percent}%";
                                 }
+
                                 return __('N/A');
                             }),
                     ])
@@ -101,12 +106,12 @@ class ViewEvaluation extends ViewRecord
                                 }
 
                                 $lines = [];
-                                $lines[] = __("Status") . ": " . ucfirst($submission->status);
-                                $lines[] = __("Submitted At") . ": " . ($submission->submitted_at?->format('Y-m-d H:i') ?? __('N/A'));
-                                $lines[] = __("Attempt") . ": {$submission->attempt}";
-                                $lines[] = __("Late") . ": " . ($submission->late_flag ? __('Yes') : __('No'));
+                                $lines[] = __('Status').': '.ucfirst($submission->status);
+                                $lines[] = __('Submitted At').': '.($submission->submitted_at?->format('Y-m-d H:i') ?? __('N/A'));
+                                $lines[] = __('Attempt').": {$submission->attempt}";
+                                $lines[] = __('Late').': '.($submission->late_flag ? __('Yes') : __('No'));
                                 $fileCount = $submission->submissionFiles->count();
-                                $lines[] = __("Files") . ": {$fileCount}";
+                                $lines[] = __('Files').": {$fileCount}";
 
                                 return implode("\n", $lines);
                             })
@@ -130,9 +135,9 @@ class ViewEvaluation extends ViewRecord
                                 $lines = [];
                                 $maxScore = (float) $record->max_score;
                                 $score = $grade->score;
-                                $lines[] = __("Score") . ": {$score}/{$maxScore}";
+                                $lines[] = __('Score').": {$score}/{$maxScore}";
                                 if ($grade->feedback) {
-                                    $lines[] = __("Feedback") . ": {$grade->feedback}";
+                                    $lines[] = __('Feedback').": {$grade->feedback}";
                                 }
 
                                 return implode("\n", $lines);

@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\CourseOfferings;
 
-use App\Filament\DocenteResources\DocenteResource;
 use App\Filament\DocenteResources\CourseOfferings\Pages\CreateCourseOffering;
 use App\Filament\DocenteResources\CourseOfferings\Pages\EditCourseOffering;
 use App\Filament\DocenteResources\CourseOfferings\Pages\ListCourseOfferings;
 use App\Filament\DocenteResources\CourseOfferings\Schemas\CourseOfferingForm;
 use App\Filament\DocenteResources\CourseOfferings\Tables\CourseOfferingsTable;
+use App\Filament\DocenteResources\DocenteResource;
 use App\Models\CourseOffering;
 use App\Models\TeachingAssignment;
+use App\Models\User;
 use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -44,9 +47,9 @@ class CourseOfferingResource extends DocenteResource
         return CourseOfferingsTable::configure($table)
             ->modifyQueryUsing(function (Builder $query) {
                 $user = Auth::user();
-                if ($user instanceof \App\Models\User && $user->hasRole('teacher')) {
+                if ($user instanceof User && $user->hasRole('teacher')) {
                     $query->whereExists(function (QueryBuilder $q) use ($user) {
-                        $q->from((new TeachingAssignment())->getTable())
+                        $q->from((new TeachingAssignment)->getTable())
                             ->whereColumn('teaching_assignments.course_offering_id', 'course_offerings.id')
                             ->where('teaching_assignments.teacher_id', $user->getAuthIdentifier());
                     });

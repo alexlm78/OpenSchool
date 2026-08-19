@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\Evaluations;
 
 use App\Filament\DocenteResources\DocenteResource;
@@ -10,6 +12,7 @@ use App\Filament\DocenteResources\Evaluations\Schemas\EvaluationForm;
 use App\Filament\DocenteResources\Evaluations\Tables\EvaluationsTable;
 use App\Models\Evaluation;
 use App\Models\TeachingAssignment;
+use App\Models\User;
 use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -44,9 +47,9 @@ class EvaluationResource extends DocenteResource
         return EvaluationsTable::configure($table)
             ->modifyQueryUsing(function (Builder $query) {
                 $user = Auth::user();
-                if ($user instanceof \App\Models\User && $user->hasRole('teacher')) {
+                if ($user instanceof User && $user->hasRole('teacher')) {
                     $query->whereExists(function (QueryBuilder $q) use ($user) {
-                        $q->from((new TeachingAssignment())->getTable())
+                        $q->from((new TeachingAssignment)->getTable())
                             ->whereColumn('teaching_assignments.course_offering_id', 'evaluations.course_offering_id')
                             ->where('teaching_assignments.teacher_id', $user->getAuthIdentifier());
                     });

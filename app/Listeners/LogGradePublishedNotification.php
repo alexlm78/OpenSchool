@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners;
 
 use App\Events\GradePublished;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
@@ -20,13 +23,13 @@ final class LogGradePublishedNotification
         $guardianIds = [];
         try {
             if ($studentUserId !== null) {
-                $student = \App\Models\Student::query()
+                $student = Student::query()
                     ->where('user_id', $studentUserId)
                     ->first();
-                if ($student instanceof \App\Models\Student) {
+                if ($student instanceof Student) {
                     $guardianIds = $student->guardians()
                         ->pluck('guardians.user_id')
-                        ->filter(static fn ($id): bool => is_int($id))
+                        ->filter(static fn ($id): bool => \is_int($id))
                         ->values()
                         ->all();
                 }
@@ -57,7 +60,7 @@ final class LogGradePublishedNotification
             'feedback' => $grade->feedback,
             'graded_by_user_id' => $grade->graded_by,
             'guardian_user_ids_to_notify' => $guardianIds,
-            'guardian_count' => count($guardianIds),
+            'guardian_count' => \count($guardianIds),
             'is_update' => $event->isUpdate,
         ]);
     }

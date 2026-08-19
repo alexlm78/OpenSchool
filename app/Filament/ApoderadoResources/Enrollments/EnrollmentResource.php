@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\ApoderadoResources\Enrollments;
 
 use App\Filament\ApoderadoResource;

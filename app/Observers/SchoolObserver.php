@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Observers;
 
 use App\Models\School;
@@ -10,13 +12,12 @@ final class SchoolObserver
 {
     public function __construct(
         private readonly DefaultRoleSeeder $roleSeeder,
-    ) {
-    }
+    ) {}
 
     public function created(School $school): void
     {
         $schoolId = $school->getKey();
-        if (! is_int($schoolId) || $schoolId < 1) {
+        if (! \is_int($schoolId) || $schoolId < 1) {
             return;
         }
 

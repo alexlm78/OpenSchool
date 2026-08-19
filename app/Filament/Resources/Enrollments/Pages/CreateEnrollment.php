@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Enrollments\Pages;
 
 use App\Domain\Enrollment\EnrollStudent;
@@ -22,14 +24,14 @@ class CreateEnrollment extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         try {
-            $enrolledAt = isset($data['enrolled_at']) && is_string($data['enrolled_at'])
+            $enrolledAt = isset($data['enrolled_at']) && \is_string($data['enrolled_at'])
                 ? Carbon::parse($data['enrolled_at'])
                 : null;
 
             return app(EnrollStudent::class)->enroll(
                 studentId: (int) $data['student_id'],
                 courseOfferingId: (int) $data['course_offering_id'],
-                status: isset($data['status']) && is_string($data['status']) ? $data['status'] : 'active',
+                status: isset($data['status']) && \is_string($data['status']) ? $data['status'] : 'active',
                 enrolledAt: $enrolledAt,
             );
         } catch (EnrollmentAlreadyExists $e) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\ApoderadoResources\Enrollments\Tables;
 
 use Filament\Actions\ViewAction;
@@ -11,9 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 class EnrollmentsTable
 {
     /**
-     * @param  Table  $table
      * @param  array<string, string>  $studentFilterOptions
-     * @return Table
      */
     public static function configure(Table $table, array $studentFilterOptions = []): Table
     {

@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\ApoderadoResources\Students\Pages;
 
 use App\Filament\ApoderadoResources\Students\StudentResource;
-use App\Models\Guardian;
+use App\Models\Enrollment;
+use App\Models\Evaluation;
+use App\Models\Grade;
 use App\Models\Student;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
@@ -11,7 +15,6 @@ use Filament\Infolists\Components\Tabs;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Auth;
 
 class ViewStudent extends ViewRecord
 {
@@ -70,7 +73,7 @@ class ViewStudent extends ViewRecord
                                         RepeatableEntry::make('enrollmentList')
                                             ->label(__('Enrollments'))
                                             ->state(function (Student $record) {
-                                                return \App\Models\Enrollment::query()
+                                                return Enrollment::query()
                                                     ->with([
                                                         'courseOffering.courseTemplate',
                                                         'courseOffering.academicPeriod',
@@ -111,7 +114,7 @@ class ViewStudent extends ViewRecord
                                             ->state(function (Student $record) {
                                                 $studentUserId = $record->user_id;
 
-                                                return \App\Models\Evaluation::query()
+                                                return Evaluation::query()
                                                     ->with([
                                                         'courseOffering.courseTemplate',
                                                         'courseOffering.academicPeriod',
@@ -139,7 +142,7 @@ class ViewStudent extends ViewRecord
                                                 TextEntry::make('evaluationStatus')
                                                     ->label(__('Status'))
                                                     ->badge()
-                                                    ->state(function (\App\Models\Evaluation $evaluation) use ($record) {
+                                                    ->state(function (Evaluation $evaluation) use ($record) {
                                                         $studentUserId = $record->user_id;
 
                                                         $hasSubmission = $evaluation->submissions()
@@ -184,7 +187,7 @@ class ViewStudent extends ViewRecord
                                         RepeatableEntry::make('gradeList')
                                             ->label(__('Grades'))
                                             ->state(function (Student $record) {
-                                                return \App\Models\Grade::query()
+                                                return Grade::query()
                                                     ->with([
                                                         'evaluation.courseOffering.courseTemplate',
                                                         'grader',

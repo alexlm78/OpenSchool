@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Models\School;
 use App\Observers\SchoolObserver;
 use App\Services\ExtendedTranslationLoader;
 use App\Tenancy\TenantContext;
-use Illuminate\Translation\Translator;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Translation\Translator;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(TenantContext::class, fn () => new TenantContext());
+        $this->app->singleton(TenantContext::class, fn () => new TenantContext);
 
         $this->app->extend('translation.loader', function ($defaultLoader, $app) {
             return $this->createExtendedLoader($app);
@@ -63,10 +65,10 @@ class AppServiceProvider extends ServiceProvider
     protected function createExtendedLoader($app): ExtendedTranslationLoader
     {
         $defaultPaths = (array) $app['config']['view.paths'];
-        $resourceLang = is_callable([$app, 'langPath']) ? (string) $app->langPath() : resource_path('lang');
+        $resourceLang = \is_callable([$app, 'langPath']) ? (string) $app->langPath() : resource_path('lang');
         $langPaths = [];
-        if (is_string($resourceLang)) {
-            $langPaths[] = dirname($resourceLang);
+        if (\is_string($resourceLang)) {
+            $langPaths[] = \dirname($resourceLang);
             $langPaths[] = $resourceLang;
         }
         $paths = array_values(array_unique(array_merge($defaultPaths, $langPaths)));

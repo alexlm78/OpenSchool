@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\CourseOfferings\Schemas;
 
 use App\Models\School;
@@ -7,6 +9,7 @@ use App\Tenancy\TenantContext;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class CourseOfferingForm
 {
@@ -22,7 +25,8 @@ class CourseOfferingForm
                     ->preload()
                     ->default(static function (): ?int {
                         $id = app(TenantContext::class)->getSchoolId();
-                        return is_int($id) ? $id : null;
+
+                        return \is_int($id) ? $id : null;
                     })
                     ->live(),
                 Select::make('academic_period_id')
@@ -30,10 +34,10 @@ class CourseOfferingForm
                     ->relationship(
                         name: 'academicPeriod',
                         titleAttribute: 'name',
-                        modifyQueryUsing: static fn (\Illuminate\Database\Eloquent\Builder $q, callable $get) => $q
+                        modifyQueryUsing: static fn (Builder $q, callable $get) => $q
                             ->when(
                                 filled($get('school_id')),
-                                fn (\Illuminate\Database\Eloquent\Builder $q) => $q->where('school_id', $get('school_id')),
+                                fn (Builder $q) => $q->where('school_id', $get('school_id')),
                             ),
                     )
                     ->searchable()
@@ -44,16 +48,16 @@ class CourseOfferingForm
                     ->relationship(
                         name: 'courseTemplate',
                         titleAttribute: 'name',
-                        modifyQueryUsing: static fn (\Illuminate\Database\Eloquent\Builder $q, callable $get) => $q
+                        modifyQueryUsing: static fn (Builder $q, callable $get) => $q
                             ->when(
                                 filled($get('school_id')),
-                                fn (\Illuminate\Database\Eloquent\Builder $q) => $q->where('school_id', $get('school_id')),
+                                fn (Builder $q) => $q->where('school_id', $get('school_id')),
                             ),
                     )
                     ->searchable(['name', 'code'])
                     ->preload()
                     ->getOptionLabelFromRecordUsing(
-                        static fn ($record): string => trim(sprintf(
+                        static fn ($record): string => trim(\sprintf(
                             '[%s] %s',
                             (string) $record->code,
                             (string) $record->name,

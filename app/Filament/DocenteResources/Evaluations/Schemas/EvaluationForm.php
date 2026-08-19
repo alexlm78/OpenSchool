@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\Evaluations\Schemas;
 
+use App\Models\CourseOffering;
+use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,7 +29,7 @@ class EvaluationForm
                         'id',
                         function (Builder $query): Builder {
                             $user = Auth::user();
-                            if (! $user instanceof \App\Models\User) {
+                            if (! $user instanceof User) {
                                 return $query->whereRaw('1 = 0');
                             }
 
@@ -46,7 +50,7 @@ class EvaluationForm
                     )
                     ->searchable()
                     ->preload()
-                    ->getOptionLabelFromRecordUsing(fn (\App\Models\CourseOffering $record): string => trim(sprintf(
+                    ->getOptionLabelFromRecordUsing(fn (CourseOffering $record): string => trim(\sprintf(
                         __('Offer #%d - Period %s - Course %s - Section %s'),
                         $record->id,
                         (string) $record->academic_period_id,

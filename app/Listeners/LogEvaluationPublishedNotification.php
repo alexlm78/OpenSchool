@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners;
 
 use App\Events\EvaluationPublished;
@@ -22,10 +24,10 @@ final class LogEvaluationPublishedNotification
                 ->select('student_id')
                 ->where('status', 'active');
 
-            if (is_int($schoolId)) {
+            if (\is_int($schoolId)) {
                 $query->where('school_id', $schoolId);
             }
-            if (is_int($courseOfferingId)) {
+            if (\is_int($courseOfferingId)) {
                 $query->where('course_offering_id', $courseOfferingId);
             }
 

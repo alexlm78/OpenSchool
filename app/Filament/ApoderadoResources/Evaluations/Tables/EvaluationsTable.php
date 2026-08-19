@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\ApoderadoResources\Evaluations\Tables;
 
 use App\Filament\ApoderadoResources\Evaluations\EvaluationResource;
@@ -14,10 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
 class EvaluationsTable
 {
     /**
-     * @param  Table  $table
      * @param  array<string, string>  $studentFilterOptions
      * @param  array<string, string>  $courseOfferingOptions
-     * @return Table
      */
     public static function configure(Table $table, array $studentFilterOptions = [], array $courseOfferingOptions = []): Table
     {
@@ -25,7 +25,7 @@ class EvaluationsTable
             ->columns([
                 TextColumn::make('derivedStudent')
                     ->label(__('Student'))
-                    ->state(function (Evaluation $record, Table $livewireTable) use ($studentFilterOptions): string {
+                    ->state(function (Evaluation $record, Table $livewireTable): string {
                         $tableFilters = method_exists($livewireTable, 'getTableFilters') ? $livewireTable->getTableFilters() : [];
                         $filters = $tableFilters['data'] ?? [];
                         $selectedStudentId = $filters['student']['value'] ?? null;
@@ -106,7 +106,7 @@ class EvaluationsTable
                         $selectedStudentId = $filters['student']['value'] ?? null;
                         $linkedIds = EvaluationResource::linkedStudentUserIds();
 
-                        $studentIds = ! empty($selectedStudentId) && in_array((int) $selectedStudentId, $linkedIds, true)
+                        $studentIds = ! empty($selectedStudentId) && \in_array((int) $selectedStudentId, $linkedIds, true)
                             ? [(int) $selectedStudentId]
                             : $linkedIds;
 
@@ -141,7 +141,7 @@ class EvaluationsTable
                             }
                         }
 
-                        if (count($studentIds) === 1) {
+                        if (\count($studentIds) === 1) {
                             if ($allGraded) {
                                 return 'graded';
                             }

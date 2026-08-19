@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 class ProjectDetails extends TenantModel
@@ -13,6 +15,11 @@ class ProjectDetails extends TenantModel
         'rubric',
     ];
 
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
+
     protected function casts(): array
     {
         return [
@@ -20,10 +27,5 @@ class ProjectDetails extends TenantModel
             'group_project' => 'boolean',
             'max_group_size' => 'integer',
         ];
-    }
-
-    public function school()
-    {
-        return $this->belongsTo(School::class);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\TeachingAssignments;
 
 use App\Filament\DocenteResources\DocenteResource;
@@ -9,11 +11,12 @@ use App\Filament\DocenteResources\TeachingAssignments\Pages\ListTeachingAssignme
 use App\Filament\DocenteResources\TeachingAssignments\Schemas\TeachingAssignmentForm;
 use App\Filament\DocenteResources\TeachingAssignments\Tables\TeachingAssignmentsTable;
 use App\Models\TeachingAssignment;
+use App\Models\User;
 use BackedEnum;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class TeachingAssignmentResource extends DocenteResource
@@ -42,7 +45,7 @@ class TeachingAssignmentResource extends DocenteResource
         return TeachingAssignmentsTable::configure($table)
             ->modifyQueryUsing(function (Builder $query) {
                 $user = Auth::user();
-                if ($user instanceof \App\Models\User && $user->hasRole('teacher')) {
+                if ($user instanceof User && $user->hasRole('teacher')) {
                     $query->where('teacher_id', $user->getAuthIdentifier());
                 }
             });

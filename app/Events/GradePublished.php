@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Events;
 
 use App\Models\Grade;
@@ -18,8 +20,7 @@ final class GradePublished
         public readonly Grade $grade,
         public readonly ?School $school = null,
         public readonly bool $isUpdate = false,
-    ) {
-    }
+    ) {}
 
     public function getSchoolId(): ?int
     {
@@ -34,17 +35,17 @@ final class GradePublished
 
         $id = $school->getKey();
 
-        return is_int($id) ? $id : null;
+        return \is_int($id) ? $id : null;
     }
 
     public function getStudentUserId(): ?int
     {
         $id = $this->grade->student_id;
-        if (is_int($id)) {
+        if (\is_int($id)) {
             return $id;
         }
-        $id = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $id = filter_var($id, \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
-        return is_int($id) ? $id : null;
+        return \is_int($id) ? $id : null;
     }
 }

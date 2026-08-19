@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 class ExamDetails extends TenantModel
@@ -14,6 +16,11 @@ class ExamDetails extends TenantModel
         'modality',
     ];
 
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
+
     protected function casts(): array
     {
         return [
@@ -21,10 +28,5 @@ class ExamDetails extends TenantModel
             'exam_date' => 'datetime',
             'duration_minutes' => 'integer',
         ];
-    }
-
-    public function school()
-    {
-        return $this->belongsTo(School::class);
     }
 }

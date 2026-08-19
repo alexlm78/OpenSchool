@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\TimeSlots\Pages;
 
 use App\Filament\Resources\TimeSlots\TimeSlotResource;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\School;
@@ -17,8 +19,8 @@ final class SeedDefaultRolesForSchoolCommand extends Command
     public function handle(DefaultRoleSeeder $seeder): int
     {
         $schoolIdRaw = $this->argument('schoolId');
-        $schoolId = filter_var($schoolIdRaw, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if (! is_int($schoolId)) {
+        $schoolId = filter_var($schoolIdRaw, \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (! \is_int($schoolId)) {
             $this->error('Invalid schoolId provided. Must be a positive integer.');
 
             return self::FAILURE;
@@ -31,7 +33,7 @@ final class SeedDefaultRolesForSchoolCommand extends Command
             return self::FAILURE;
         }
 
-        $guard = is_string($this->option('guard')) ? (string) $this->option('guard') : 'web';
+        $guard = \is_string($this->option('guard')) ? (string) $this->option('guard') : 'web';
         $force = (bool) $this->option('force');
 
         try {

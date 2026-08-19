@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\ApoderadoResources\Grades\Tables;
 
 use Filament\Actions\ViewAction;
@@ -11,11 +13,9 @@ use Illuminate\Database\Eloquent\Builder;
 class GradesTable
 {
     /**
-     * @param  Table  $table
      * @param  array<string, string>  $studentFilterOptions
      * @param  array<string, string>  $evaluationOptions
      * @param  array<string, string>  $courseOfferingOptions
-     * @return Table
      */
     public static function configure(Table $table, array $studentFilterOptions = [], array $evaluationOptions = [], array $courseOfferingOptions = []): Table
     {

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament;
 
+use App\Models\User;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,7 +14,7 @@ abstract class AdminResource extends Resource
     {
         $user = Auth::user();
 
-        return $user instanceof \App\Models\User && $user->hasAdministrativeRole();
+        return $user instanceof User && $user->hasAdministrativeRole();
     }
 
     public static function canCreate(): bool

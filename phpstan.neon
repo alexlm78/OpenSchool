@@ -1,0 +1,28 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+    - ./phpstan-baseline.neon
+
+parameters:
+
+    paths:
+        - app
+        - database/seeders
+
+    excludePaths:
+        - app/Filament/*/Pages/*
+        - app/Filament/*Resources/**/Pages/**
+
+    level: 5
+
+    tmpDir: storage/framework/cache/phpstan
+
+    reportUnmatchedIgnoredErrors: false
+
+    treatPhpDocTypesAsCertain: true
+    reportAlwaysTrueInLastCondition: true
+    checkMaybeUndefinedVariables: true
+    universalObjectCratesClasses:
+        - Illuminate\Database\Eloquent\Model
+        - Illuminate\Support\Fluent
+        - Filament\Forms\Get
+        - Filament\Forms\Set

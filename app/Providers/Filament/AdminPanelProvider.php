@@ -1,7 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\EnsureAdminRole;
+use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\SetTenantFromAuth;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -55,12 +60,12 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                \App\Http\Middleware\SetLocale::class,
+                SetLocale::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
-                \App\Http\Middleware\SetTenantFromAuth::class,
-                \App\Http\Middleware\EnsureAdminRole::class,
+                SetTenantFromAuth::class,
+                EnsureAdminRole::class,
             ]);
     }
 }

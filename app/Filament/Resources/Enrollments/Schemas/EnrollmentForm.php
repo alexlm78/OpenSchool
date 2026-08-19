@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Enrollments\Schemas;
 
+use App\Models\CourseOffering;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class EnrollmentForm
 {
@@ -23,15 +27,15 @@ class EnrollmentForm
                     ->required()
                     ->relationship(
                         name: 'courseOffering',
-                        modifyQueryUsing: static fn (\Illuminate\Database\Eloquent\Builder $q, callable $get) => $q
+                        modifyQueryUsing: static fn (Builder $q, callable $get) => $q
                             ->when(
                                 filled($get('school_id')),
-                                fn (\Illuminate\Database\Eloquent\Builder $q) => $q->where('school_id', $get('school_id')),
+                                fn (Builder $q) => $q->where('school_id', $get('school_id')),
                             ),
                     )
                     ->searchable()
                     ->preload()
-                    ->getOptionLabelFromRecordUsing(fn (\App\Models\CourseOffering $record): string => trim(sprintf(
+                    ->getOptionLabelFromRecordUsing(fn (CourseOffering $record): string => trim(\sprintf(
                         __('Offer #%d - Period %s - Course %s - Section %s'),
                         $record->id,
                         (string) ($record->academicPeriod?->name ?? (string) $record->academic_period_id),

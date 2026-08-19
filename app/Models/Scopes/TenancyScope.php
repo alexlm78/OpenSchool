@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Scopes;
 
 use App\Tenancy\TenantContext;
@@ -24,6 +26,6 @@ class TenancyScope implements Scope
             return;
         }
 
-        $builder->where($model->getTable() . '.school_id', $schoolId);
+        $builder->where($model->getTable().'.school_id', $schoolId);
     }
 }

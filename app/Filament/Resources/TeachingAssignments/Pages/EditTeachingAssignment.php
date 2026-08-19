@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\TeachingAssignments\Pages;
 
 use App\Filament\Resources\TeachingAssignments\TeachingAssignmentResource;

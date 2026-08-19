@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\SubmissionFileDownloadController;
 use Illuminate\Support\Facades\Route;

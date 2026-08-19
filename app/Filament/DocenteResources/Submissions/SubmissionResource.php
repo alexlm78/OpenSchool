@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\Submissions;
 
 use App\Filament\DocenteResources\DocenteResource;
@@ -9,6 +11,7 @@ use App\Filament\DocenteResources\Submissions\Pages\ListSubmissions;
 use App\Filament\DocenteResources\Submissions\Schemas\SubmissionForm;
 use App\Filament\DocenteResources\Submissions\Tables\SubmissionsTable;
 use App\Models\Submission;
+use App\Models\User;
 use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -43,7 +46,7 @@ class SubmissionResource extends DocenteResource
         return SubmissionsTable::configure($table)
             ->modifyQueryUsing(function (Builder $query) {
                 $user = Auth::user();
-                if ($user instanceof \App\Models\User && $user->hasRole('teacher')) {
+                if ($user instanceof User && $user->hasRole('teacher')) {
                     $query->whereExists(function (QueryBuilder $q) use ($user) {
                         $q->from('evaluations')
                             ->join('teaching_assignments', function ($join) {

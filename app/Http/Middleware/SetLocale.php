@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use App\Models\User;
@@ -130,7 +132,7 @@ class SetLocale
 
     protected function isAvailable(string $locale): bool
     {
-        return array_key_exists($locale, $this->availableLocales());
+        return \array_key_exists($locale, $this->availableLocales());
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\DocenteResources\Evaluations\Pages;
 
 use App\Filament\DocenteResources\Evaluations\EvaluationResource;
@@ -22,8 +24,8 @@ class CreateEvaluation extends CreateRecord
             $assignmentDetails = AssignmentDetails::create([
                 'evaluationable_type' => Evaluation::class,
                 'evaluationable_id' => 0,
-                'description' => isset($data['description']) && is_string($data['description']) ? $data['description'] : null,
-                'file_requirements' => isset($data['file_requirements']) && is_string($data['file_requirements']) ? $data['file_requirements'] : null,
+                'description' => isset($data['description']) && \is_string($data['description']) ? $data['description'] : null,
+                'file_requirements' => isset($data['file_requirements']) && \is_string($data['file_requirements']) ? $data['file_requirements'] : null,
                 'allow_late_submission' => (bool) ($data['allow_late_submission'] ?? false),
                 'late_penalty_percent' => (int) ($data['late_penalty_percent'] ?? 0),
                 'late_until' => $data['late_until'] ?? null,
@@ -32,7 +34,7 @@ class CreateEvaluation extends CreateRecord
             $evaluation = Evaluation::create([
                 'course_offering_id' => (int) $data['course_offering_id'],
                 'title' => (string) $data['title'],
-                'description' => isset($data['description']) && is_string($data['description']) ? $data['description'] : null,
+                'description' => isset($data['description']) && \is_string($data['description']) ? $data['description'] : null,
                 'max_score' => $data['max_score'] ?? 100,
                 'weight' => $data['weight'] ?? 1,
                 'due_at' => $data['due_at'] ?? null,

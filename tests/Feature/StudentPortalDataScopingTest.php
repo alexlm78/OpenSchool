@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\AcademicPeriod;
+use App\Models\AssignmentDetails;
 use App\Models\CourseOffering;
 use App\Models\CourseTemplate;
 use App\Models\Enrollment;
@@ -11,8 +14,6 @@ use App\Models\Grade;
 use App\Models\Guardian;
 use App\Models\School;
 use App\Models\Student;
-use App\Models\Submission;
-use App\Models\SubmissionFile;
 use App\Models\User;
 use App\Tenancy\TenantContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -95,7 +96,7 @@ class StudentPortalDataScopingTest extends TestCase
             'school_id' => $school->id, 'academic_period_id' => $period->id,
             'course_template_id' => $template->id, 'capacity' => 30, 'section_name' => 'A',
         ]);
-        $assignment = \App\Models\AssignmentDetails::create([
+        $assignment = AssignmentDetails::create([
             'school_id' => $school->id,
             'evaluationable_type' => Evaluation::class,
             'evaluationable_id' => 0,
@@ -134,7 +135,7 @@ class StudentPortalDataScopingTest extends TestCase
 
         $linkedIds = $guardianProfile->students()
             ->pluck('students.user_id')
-            ->filter(static fn ($id): bool => is_int($id))
+            ->filter(static fn ($id): bool => \is_int($id))
             ->values()
             ->all();
 

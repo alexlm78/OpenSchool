@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\OfferingTimeSlots\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class OfferingTimeSlotForm
 {
@@ -22,14 +25,14 @@ class OfferingTimeSlotForm
                     ->label(__('Course Offering'))
                     ->relationship(
                         name: 'courseOffering',
-                        modifyQueryUsing: static fn (\Illuminate\Database\Eloquent\Builder $q, callable $get) => $q
+                        modifyQueryUsing: static fn (Builder $q, callable $get) => $q
                             ->when(
                                 filled($get('school_id')),
-                                fn (\Illuminate\Database\Eloquent\Builder $q) => $q->where('school_id', $get('school_id')),
+                                fn (Builder $q) => $q->where('school_id', $get('school_id')),
                             ),
                     )
                     ->getOptionLabelFromRecordUsing(
-                        static fn ($record): string => trim(sprintf(
+                        static fn ($record): string => trim(\sprintf(
                             __(
                                 'Offer #%d - Period %s - Course %s - Section %s',
                             ),
@@ -46,14 +49,14 @@ class OfferingTimeSlotForm
                     ->label(__('Time Slot'))
                     ->relationship(
                         name: 'timeSlot',
-                        modifyQueryUsing: static fn (\Illuminate\Database\Eloquent\Builder $q, callable $get) => $q
+                        modifyQueryUsing: static fn (Builder $q, callable $get) => $q
                             ->when(
                                 filled($get('school_id')),
-                                fn (\Illuminate\Database\Eloquent\Builder $q) => $q->where('school_id', $get('school_id')),
+                                fn (Builder $q) => $q->where('school_id', $get('school_id')),
                             ),
                     )
                     ->getOptionLabelFromRecordUsing(
-                        static fn ($record): string => trim(sprintf(
+                        static fn ($record): string => trim(\sprintf(
                             '%s %s - %s',
                             (string) $record->day_of_week,
                             (string) $record->start_time,

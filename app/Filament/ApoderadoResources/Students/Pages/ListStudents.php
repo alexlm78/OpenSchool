@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\ApoderadoResources\Students\Pages;
 
 use App\Filament\ApoderadoResources\Students\StudentResource;

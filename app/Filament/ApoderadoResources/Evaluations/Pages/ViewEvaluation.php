@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\ApoderadoResources\Evaluations\Pages;
 
 use App\Filament\ApoderadoResources\Evaluations\EvaluationResource;
+use App\Models\Enrollment;
 use App\Models\Evaluation;
 use App\Models\Student;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -94,7 +97,7 @@ class ViewEvaluation extends ViewRecord
                                     return collect();
                                 }
 
-                                $enrolledStudentIds = \App\Models\Enrollment::query()
+                                $enrolledStudentIds = Enrollment::query()
                                     ->whereIn('student_id', $linkedIds)
                                     ->where('course_offering_id', $record->course_offering_id)
                                     ->where('status', 'active')

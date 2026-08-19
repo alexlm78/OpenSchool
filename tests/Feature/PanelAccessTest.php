@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\School;
 use App\Models\User;
+use App\Support\DefaultRoleSeeder;
 use App\Tenancy\TenantContext;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
@@ -231,7 +233,7 @@ class PanelAccessTest extends TestCase
 
     private function seedRolesForSchool(int $schoolId): void
     {
-        app(\App\Support\DefaultRoleSeeder::class)->seedForSchool($schoolId, force: false);
+        app(DefaultRoleSeeder::class)->seedForSchool($schoolId, force: false);
     }
 
     private function createUserForSchool(int $schoolId): User&Authenticatable

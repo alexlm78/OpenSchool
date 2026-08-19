@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\AlumnoResources\Submissions\Schemas;
 
 use App\Models\Evaluation;
@@ -16,6 +18,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SubmissionForm
 {
@@ -94,8 +97,8 @@ class SubmissionForm
                             ->required()
                             ->storeFileNamesIn('file_name')
                             ->afterStateUpdated(function (Set $set, Get $get, $state) {
-                                if (is_string($state)) {
-                                    $disk = \Illuminate\Support\Facades\Storage::disk('local');
+                                if (\is_string($state)) {
+                                    $disk = Storage::disk('local');
                                     $fullPath = $disk->path($state);
                                     if (file_exists($fullPath)) {
                                         $set('file_size', filesize($fullPath));
@@ -125,7 +128,7 @@ class SubmissionForm
                 $allowLate = $evaluationable && isset($evaluationable->allow_late_submission) && $evaluationable->allow_late_submission;
 
                 if (! $allowLate && $evaluation->due_at) {
-                    $submittedDate = is_string($submittedAt) ? new \DateTime($submittedAt) : $submittedAt;
+                    $submittedDate = \is_string($submittedAt) ? new \DateTime($submittedAt) : $submittedAt;
                     if ($submittedDate > $evaluation->due_at) {
                         $lateFlag = true;
                     }

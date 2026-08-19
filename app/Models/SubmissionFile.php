@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 class SubmissionFile extends TenantModel
@@ -13,14 +15,6 @@ class SubmissionFile extends TenantModel
         'file_size',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'submission_id' => 'integer',
-            'file_size' => 'integer',
-        ];
-    }
-
     public function school()
     {
         return $this->belongsTo(School::class);
@@ -29,5 +23,13 @@ class SubmissionFile extends TenantModel
     public function submission()
     {
         return $this->belongsTo(Submission::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'submission_id' => 'integer',
+            'file_size' => 'integer',
+        ];
     }
 }

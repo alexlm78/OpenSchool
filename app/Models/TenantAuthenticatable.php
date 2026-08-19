@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Scopes\TenancyScope;
@@ -9,6 +11,6 @@ abstract class TenantAuthenticatable extends Authenticatable
 {
     protected static function booted(): void
     {
-        static::addGlobalScope(new TenancyScope());
+        static::addGlobalScope(new TenancyScope);
     }
 }
