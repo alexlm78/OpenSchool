@@ -106,4 +106,19 @@ class User extends TenantAuthenticatable implements FilamentUser
     {
         return $this->belongsTo(School::class);
     }
+
+    public function studentProfile()
+    {
+        return $this->hasOne(Student::class, 'user_id');
+    }
+
+    public function teacherProfile()
+    {
+        return $this->hasOne(Teacher::class, 'user_id');
+    }
+
+    public function guardianProfile()
+    {
+        return $this->hasOne(Guardian::class, 'user_id');
+    }
 }
