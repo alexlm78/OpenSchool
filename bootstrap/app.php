@@ -1,5 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Http\Middleware\Api\AddCorrelationIdResponseHeader;
+use App\Http\Middleware\Api\EnsureJsonAcceptHeader;
+use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\SetTenantFromAuth;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
