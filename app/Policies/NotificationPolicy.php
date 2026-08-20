@@ -31,9 +31,11 @@ final class NotificationPolicy
         }
 
         if ($user->hasRole('guardian')) {
+            $linked = LinkedGuardianStudents::resolveForUser($user);
+
             return $notifiableType === User::class && \in_array(
                 $notifiableId,
-                LinkedGuardianStudents::resolveForUser($user),
+                $linked['userIds'],
                 true,
             );
         }

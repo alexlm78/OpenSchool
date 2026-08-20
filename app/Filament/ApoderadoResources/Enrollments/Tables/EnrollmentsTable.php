@@ -19,7 +19,7 @@ class EnrollmentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('student.name')
+                TextColumn::make('student.user.name')
                     ->label(__('Student'))
                     ->searchable()
                     ->sortable(),
@@ -68,12 +68,21 @@ class EnrollmentsTable
 
                         return $query->where('student_id', (int) $value);
                     }),
+                SelectFilter::make('status')
+                    ->label(__('Status'))
+                    ->options([
+                        'active' => __('Active'),
+                        'completed' => __('Completed'),
+                        'dropped' => __('Dropped'),
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make(),
             ])
             ->toolbarActions([
                 //
-            ]);
+            ])
+            ->defaultSort('enrolled_at', 'desc')
+            ->paginationPageOptions([10, 25, 50]);
     }
 }

@@ -51,6 +51,8 @@ class StudentsTable
             ])
             ->toolbarActions([
                 //
-            ]);
+            ])
+            ->defaultSort('user.name', 'asc')
+            ->paginationPageOptions([10, 25, 50]);
     }
 }

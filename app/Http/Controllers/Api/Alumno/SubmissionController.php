@@ -49,8 +49,8 @@ final class SubmissionController extends Controller
         }
 
         if ($user->hasRole('guardian')) {
-            $linkedUserIds = LinkedGuardianStudents::resolveForUser($user);
-            $query->whereIn('student_id', $linkedUserIds);
+            $linked = LinkedGuardianStudents::resolveForUser($user);
+            $query->whereIn('student_id', $linked['profileIds']);
         }
 
         if ($request->filled('evaluation_id')) {

@@ -58,19 +58,31 @@ final class EvaluationController extends Controller
         }
 
         if ($user->hasRole('guardian')) {
-            $linkedUserIds = LinkedGuardianStudents::resolveForUser($user);
-            $query->whereExists(
-                static function (Builder $q) use ($schoolId, $linkedUserIds): Builder {
-                    $q->selectRaw('1')
-                        ->from('enrollments')
-                        ->whereColumn('enrollments.course_offering_id', 'evaluations.course_offering_id')
-                        ->where('enrollments.school_id', $schoolId)
-                        ->whereIn('enrollments.student_id', $linkedUserIds)
-                        ->whereIn('enrollments.status', ['active', 'completed']);
+            $linked = LinkedGuardianStudents::resolveForUser($user);
+            $linkedProfileIds = $linked['profileIds'];
+            $linkedUserIds = $linked['userIds'];
 
-                    return $q;
-                },
-            );
+            $query
+                ->with([
+                    'submissions' => function ($q) use ($linkedProfileIds): void {
+                        $q->whereIn('student_id', $linkedProfileIds);
+                    },
+                    'grades' => function ($q) use ($linkedProfileIds): void {
+                        $q->whereIn('student_id', $linkedProfileIds);
+                    },
+                ])
+                ->whereExists(
+                    static function (Builder $q) use ($schoolId, $linkedProfileIds): Builder {
+                        $q->selectRaw('1')
+                            ->from('enrollments')
+                            ->whereColumn('enrollments.course_offering_id', 'evaluations.course_offering_id')
+                            ->where('enrollments.school_id', $schoolId)
+                            ->whereIn('enrollments.student_id', $linkedProfileIds)
+                            ->whereIn('enrollments.status', ['active', 'completed']);
+
+                        return $q;
+                    },
+                );
         }
 
         if ($request->filled('course_offering_id')) {

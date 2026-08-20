@@ -106,17 +106,17 @@ class ViewEvaluation extends ViewRecord
 
                                 return Student::query()
                                     ->with('user:id,name')
-                                    ->whereIn('user_id', $enrolledStudentIds)
+                                    ->whereIn('id', $enrolledStudentIds)
                                     ->get()
                                     ->map(function (Student $student) use ($record) {
-                                        $studentUserId = $student->user_id;
+                                        $studentProfileId = (int) $student->getKey();
 
                                         $submission = $record->submissions()
-                                            ->where('student_id', $studentUserId)
+                                            ->where('student_id', $studentProfileId)
                                             ->first();
 
                                         $grade = $record->grades()
-                                            ->where('student_id', $studentUserId)
+                                            ->where('student_id', $studentProfileId)
                                             ->with('grader:id,name')
                                             ->first();
 

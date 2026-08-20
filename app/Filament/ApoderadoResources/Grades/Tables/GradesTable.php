@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\ApoderadoResources\Grades\Tables;
 
+use App\Models\Grade;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -21,7 +22,7 @@ class GradesTable
     {
         return $table
             ->columns([
-                TextColumn::make('student.name')
+                TextColumn::make('student.user.name')
                     ->label(__('Student'))
                     ->searchable()
                     ->sortable(),
@@ -35,18 +36,27 @@ class GradesTable
                     ->sortable(),
                 TextColumn::make('score')
                     ->label(__('Score'))
-                    ->numeric()
-                    ->badge()
-                    ->color(function (string $state): string {
-                        $num = (float) $state;
-                        if ($num >= 70) {
-                            return 'success';
-                        }
-                        if ($num >= 50) {
-                            return 'warning';
-                        }
+                    ->formatStateUsing(static function (Grade $record): string {
+                        $score = $record->getAttributeValue('score');
+                        $max = $record->evaluation?->getAttributeValue('max_score');
+                        $maxStr = $max === null ? '—' : (string) $max;
 
-                        return 'danger';
+                        return "{$score} / {$maxStr}";
+                    })
+                    ->badge()
+                    ->color(static function (Grade $record): string {
+                        $score = (float) $record->getAttributeValue('score');
+                        $max = $record->evaluation?->getAttributeValue('max_score');
+                        if ($max === null || (float) $max <= 0) {
+                            return 'gray';
+                        }
+                        $pct = ($score / (float) $max) * 100;
+
+                        return match (true) {
+                            $pct >= 70 => 'success',
+                            $pct >= 50 => 'warning',
+                            default => 'danger',
+                        };
                     })
                     ->sortable(),
                 TextColumn::make('feedback')
@@ -105,6 +115,8 @@ class GradesTable
             ])
             ->toolbarActions([
                 //
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->paginationPageOptions([10, 25, 50]);
     }
 }

@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Apoderado\Pages\Notifications as ApoderadoNotificationsPage;
+use App\Filament\Apoderado\Widgets\ApoderadoGpaStatWidget;
+use App\Filament\Apoderado\Widgets\ApoderadoGradesWidget;
+use App\Filament\Apoderado\Widgets\ApoderadoLinkedStudentsWidget;
+use App\Filament\Apoderado\Widgets\ApoderadoNotificationsWidget;
+use App\Filament\Apoderado\Widgets\ApoderadoPendingSubmissionsWidget;
+use App\Filament\Apoderado\Widgets\ApoderadoUpcomingEvaluationsWidget;
 use App\Http\Middleware\EnsureGuardianRole;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\SetTenantFromAuth;
@@ -16,7 +23,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -33,17 +39,23 @@ class ApoderadoPanelProvider extends PanelProvider
             ->path('apoderado')
             ->login()
             ->colors([
-                'primary' => Color::Fuchsia,
+                'primary' => Color::Purple,
             ])
             ->discoverResources(in: app_path('Filament/ApoderadoResources'), for: 'App\Filament\ApoderadoResources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->discoverPages(in: app_path('Filament/Apoderado/Pages'), for: 'App\Filament\Apoderado\Pages')
             ->pages([
                 Dashboard::class,
+                ApoderadoNotificationsPage::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Apoderado/Widgets'), for: 'App\Filament\Apoderado\Widgets')
             ->widgets([
                 AccountWidget::class,
-                FilamentInfoWidget::class,
+                ApoderadoLinkedStudentsWidget::class,
+                ApoderadoGpaStatWidget::class,
+                ApoderadoPendingSubmissionsWidget::class,
+                ApoderadoGradesWidget::class,
+                ApoderadoUpcomingEvaluationsWidget::class,
+                ApoderadoNotificationsWidget::class,
             ])
             ->renderHook(
                 'panels::topbar.end',

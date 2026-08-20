@@ -55,11 +55,11 @@ final class EvaluationPolicy
         }
 
         if ($user->hasRole('guardian')) {
-            $linkedStudentUserIds = LinkedGuardianStudents::resolveForUser($user);
+            $linked = LinkedGuardianStudents::resolveForUser($user);
 
             return Enrollment::query()
                 ->where('school_id', (int) $user->getAttributeValue('school_id'))
-                ->whereIn('student_id', $linkedStudentUserIds)
+                ->whereIn('student_id', $linked['profileIds'])
                 ->where('course_offering_id', (int) $evaluation->getAttributeValue('course_offering_id'))
                 ->whereIn('status', ['active', 'completed'])
                 ->exists();

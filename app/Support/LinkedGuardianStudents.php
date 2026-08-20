@@ -5,39 +5,65 @@ declare(strict_types=1);
 namespace App\Support;
 
 use App\Models\Guardian;
-use App\Models\Student;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use Spatie\Permission\PermissionRegistrar;
 
 final class LinkedGuardianStudents
 {
     /**
-     * Resuelve los USER IDs de los estudiantes vinculados a un usuario guardián.
-     *
-     * @return array<int, int>
+     * @return array{profileIds: array<int, int>, userIds: array<int, int>}
      */
     public static function resolveForUser(User $user): array
     {
+        $schoolId = filter_var($user->getAttributeValue('school_id'), \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (\is_int($schoolId)) {
+            app(PermissionRegistrar::class)->setPermissionsTeamId($schoolId);
+        }
+
         if (! $user->hasRole('guardian')) {
-            return [];
+            return ['profileIds' => [], 'userIds' => []];
         }
 
         $profile = $user->guardianProfile;
         if (! $profile instanceof Guardian) {
-            return [];
+            return ['profileIds' => [], 'userIds' => []];
         }
 
-        /** @var Collection<int, Student> $linked */
-        $linked = $profile->students()->get(['students.id']);
+        $rows = $profile->students()
+            ->get(['students.id', 'students.user_id']);
 
-        return $linked
-            ->map(static function (Student $student): ?int {
-                $userId = $student->getAttributeValue('user_id');
+        $profileIds = [];
+        $userIds = [];
+        foreach ($rows as $row) {
+            $pid = $row->getAttributeValue('id');
+            $uid = $row->getAttributeValue('user_id');
+            if (is_numeric($pid)) {
+                $profileIds[] = (int) $pid;
+            }
+            if (is_numeric($uid)) {
+                $userIds[] = (int) $uid;
+            }
+        }
 
-                return $userId !== null ? (int) $userId : null;
-            })
-            ->filter()
-            ->values()
-            ->all();
+        return [
+            'profileIds' => array_values(array_unique($profileIds)),
+            'userIds' => array_values(array_unique($userIds)),
+        ];
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public static function profileIds(User $user): array
+    {
+        return self::resolveForUser($user)['profileIds'];
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public static function userIds(User $user): array
+    {
+        return self::resolveForUser($user)['userIds'];
     }
 }

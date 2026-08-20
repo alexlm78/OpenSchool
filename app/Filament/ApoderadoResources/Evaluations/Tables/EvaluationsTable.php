@@ -35,7 +35,7 @@ class EvaluationsTable
                         if (! empty($selectedStudentId)) {
                             $student = Student::query()
                                 ->with('user:id,name')
-                                ->where('user_id', (int) $selectedStudentId)
+                                ->where('id', (int) $selectedStudentId)
                                 ->first();
                             if ($student instanceof Student && $student->user) {
                                 $name = (string) $student->user->name;
@@ -49,10 +49,10 @@ class EvaluationsTable
 
                         $students = Student::query()
                             ->with('user:id,name')
-                            ->whereIn('user_id', $linkedIds)
+                            ->whereIn('id', $linkedIds)
                             ->whereExists(function (Builder $q) use ($record) {
                                 $q->from('enrollments')
-                                    ->whereColumn('enrollments.student_id', 'students.user_id')
+                                    ->whereColumn('enrollments.student_id', 'students.id')
                                     ->where('enrollments.course_offering_id', $record->course_offering_id)
                                     ->where('enrollments.status', 'active');
                             })
@@ -91,7 +91,24 @@ class EvaluationsTable
                     ->sortable(),
                 TextColumn::make('due_at')
                     ->label(__('Due Date'))
-                    ->dateTime()
+                    ->dateTime('M d, Y H:i')
+                    ->badge()
+                    ->color(static function (Evaluation $record): string {
+                        $due = $record->getAttributeValue('due_at');
+                        if ($due === null) {
+                            return 'gray';
+                        }
+                        $hoursLeft = now()->diffInHours($due, false);
+                        if ($hoursLeft < 0) {
+                            return 'gray';
+                        }
+
+                        return match (true) {
+                            $hoursLeft <= 24 => 'danger',
+                            $hoursLeft <= 72 => 'warning',
+                            default => 'info',
+                        };
+                    })
                     ->sortable(),
                 TextColumn::make('max_score')
                     ->label(__('Max Score'))
@@ -222,6 +239,8 @@ class EvaluationsTable
             ])
             ->toolbarActions([
                 //
-            ]);
+            ])
+            ->defaultSort('due_at', 'asc')
+            ->paginationPageOptions([10, 25, 50]);
     }
 }

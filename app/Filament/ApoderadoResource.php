@@ -9,14 +9,23 @@ use App\Models\Student;
 use App\Models\User;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\PermissionRegistrar;
 
 abstract class ApoderadoResource extends Resource
 {
     public static function canViewAny(): bool
     {
         $user = Auth::user();
+        if (! $user instanceof User) {
+            return false;
+        }
 
-        return $user instanceof User && $user->hasRole('guardian');
+        $schoolId = filter_var($user->getAttributeValue('school_id'), \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (\is_int($schoolId)) {
+            app(PermissionRegistrar::class)->setPermissionsTeamId($schoolId);
+        }
+
+        return $user->hasRole('guardian');
     }
 
     public static function canCreate(): bool
@@ -67,7 +76,7 @@ abstract class ApoderadoResource extends Resource
     }
 
     /**
-     * @return array<int, int> student user ids linked to the current guardian
+     * @return array<int, int> student profile ids linked to the current guardian
      */
     protected static function linkedStudentUserIds(): array
     {
@@ -77,7 +86,6 @@ abstract class ApoderadoResource extends Resource
         }
 
         $profile = Guardian::query()
-            ->with('students:id,user_id')
             ->where('user_id', $guardianUserId)
             ->first();
 
@@ -85,9 +93,10 @@ abstract class ApoderadoResource extends Resource
             return [];
         }
 
-        return $profile->students
-            ->map(static fn (Student $s): ?int => filter_var($s->user_id, \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null)
-            ->filter(static fn (?int $id): bool => $id !== null)
+        return $profile->students()
+            ->pluck('students.id')
+            ->map(static fn (mixed $v): ?int => is_numeric($v) ? (int) $v : null)
+            ->filter()
             ->values()
             ->all();
     }

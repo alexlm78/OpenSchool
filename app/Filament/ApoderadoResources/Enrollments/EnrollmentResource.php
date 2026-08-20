@@ -70,18 +70,18 @@ class EnrollmentResource extends ApoderadoResource
     }
 
     /**
-     * @param  array<int, int>  $studentUserIds
+     * @param  array<int, int>  $studentProfileIds
      * @return array<string, string>
      */
-    protected static function buildStudentFilterOptions(array $studentUserIds): array
+    protected static function buildStudentFilterOptions(array $studentProfileIds): array
     {
-        if (empty($studentUserIds)) {
+        if ($studentProfileIds === []) {
             return [];
         }
 
         return Student::query()
             ->with('user:id,name')
-            ->whereIn('user_id', $studentUserIds)
+            ->whereIn('id', $studentProfileIds)
             ->get()
             ->mapWithKeys(static function (Student $student): array {
                 $name = (string) ($student->user->name ?? __('Unknown Student'));
@@ -89,7 +89,7 @@ class EnrollmentResource extends ApoderadoResource
                     $name .= " ({$student->student_id})";
                 }
 
-                return [(string) $student->user_id => $name];
+                return [(string) $student->getKey() => $name];
             })
             ->all();
     }
