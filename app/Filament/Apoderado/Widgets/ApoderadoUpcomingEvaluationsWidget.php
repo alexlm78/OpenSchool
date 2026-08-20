@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Filament\Apoderado\Widgets;
 
+use App\Filament\ApoderadoResources\Evaluations\EvaluationResource;
 use App\Models\Evaluation;
 use App\Models\Submission;
 use App\Models\User;
 use App\Support\LinkedGuardianStudents;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 final class ApoderadoUpcomingEvaluationsWidget extends BaseWidget
@@ -42,7 +43,7 @@ final class ApoderadoUpcomingEvaluationsWidget extends BaseWidget
                     ->with(['courseOffering.courseTemplate'])
                     ->where('published_at', '<=', now())
                     ->where('due_at', '>=', now())
-                    ->whereExists(function (Builder $q) use ($profileIds): void {
+                    ->whereExists(function ($q) use ($profileIds): void {
                         $q->from('enrollments')
                             ->whereColumn('enrollments.course_offering_id', 'evaluations.course_offering_id')
                             ->whereIn('enrollments.student_id', $profileIds !== [] ? $profileIds : [-1])
@@ -150,6 +151,13 @@ final class ApoderadoUpcomingEvaluationsWidget extends BaseWidget
                         return 'info';
                     })
                     ->sortable(false),
+            ])
+            ->actions([
+                Action::make('view_evaluation')
+                    ->label(__('widgets.upcoming_view'))
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->url(fn (Evaluation $record): string => EvaluationResource::getUrl('view', ['record' => $record]))
+                    ->openUrlInNewTab(),
             ])
             ->paginated(false);
     }

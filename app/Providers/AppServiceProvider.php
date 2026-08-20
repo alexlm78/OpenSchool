@@ -72,7 +72,9 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->resolved('translator')) {
             $previous = $this->app['translator'];
             $locale = $previous instanceof Translator ? $previous->getLocale() : (string) config('app.locale');
-            $fallback = $previous instanceof Translator ? $previous->getFallbackLocale() : (string) config('app.fallback_locale');
+            $fallback = $previous instanceof Translator && method_exists($previous, 'getFallbackLocale')
+                ? $previous->getFallbackLocale()
+                : (string) config('app.fallback_locale');
 
             $translator = new Translator($loader, $locale);
             $translator->setFallback($fallback);

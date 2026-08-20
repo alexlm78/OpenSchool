@@ -6,6 +6,7 @@ namespace App\Filament\Apoderado\Widgets;
 
 use App\Models\User;
 use App\Support\LinkedGuardianStudents;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -99,6 +100,14 @@ final class ApoderadoNotificationsWidget extends BaseWidget
                     ->label(__('notifications.received_at'))
                     ->dateTime('M d, Y H:i')
                     ->sortable(false),
+            ])
+            ->actions([
+                Action::make('view_entity')
+                    ->label(__('notifications.go_to'))
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->url(fn (DatabaseNotification $n): ?string => isset($n->getAttribute('data')['action_url']) ? url((string) $n->getAttribute('data')['action_url']) : null)
+                    ->openUrlInNewTab()
+                    ->hidden(fn (DatabaseNotification $n): bool => empty($n->getAttribute('data')['action_url'] ?? '')),
             ])
             ->paginated(false);
     }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Apoderado\Pages\BoletinGuardian;
+use App\Filament\Apoderado\Pages\ChangeGuardianPassword;
+use App\Filament\Apoderado\Pages\EditGuardianProfile;
 use App\Filament\Apoderado\Pages\Notifications as ApoderadoNotificationsPage;
 use App\Filament\Apoderado\Widgets\ApoderadoGpaStatWidget;
 use App\Filament\Apoderado\Widgets\ApoderadoGradesWidget;
@@ -18,6 +21,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -38,6 +42,7 @@ class ApoderadoPanelProvider extends PanelProvider
             ->id('apoderado')
             ->path('apoderado')
             ->login()
+            ->profile()
             ->colors([
                 'primary' => Color::Purple,
             ])
@@ -46,6 +51,9 @@ class ApoderadoPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
                 ApoderadoNotificationsPage::class,
+                EditGuardianProfile::class,
+                ChangeGuardianPassword::class,
+                BoletinGuardian::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Apoderado/Widgets'), for: 'App\Filament\Apoderado\Widgets')
             ->widgets([
@@ -56,6 +64,16 @@ class ApoderadoPanelProvider extends PanelProvider
                 ApoderadoGradesWidget::class,
                 ApoderadoUpcomingEvaluationsWidget::class,
                 ApoderadoNotificationsWidget::class,
+            ])
+            ->userMenuItems([
+                'profile' => MenuItem::make()
+                    ->label(__('navigation.apoderado_profile'))
+                    ->url(fn (): string => EditGuardianProfile::getUrl())
+                    ->icon('heroicon-o-user'),
+                MenuItem::make()
+                    ->label(__('navigation.apoderado_password'))
+                    ->url(fn (): string => ChangeGuardianPassword::getUrl())
+                    ->icon('heroicon-o-lock-closed'),
             ])
             ->renderHook(
                 'panels::topbar.end',

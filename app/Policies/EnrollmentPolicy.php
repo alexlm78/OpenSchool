@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Models\Enrollment;
-use App\Models\Guardian;
-use App\Models\Student;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use App\Support\LinkedGuardianStudents;
 
 final class EnrollmentPolicy
 {
@@ -46,18 +44,9 @@ final class EnrollmentPolicy
         }
 
         if ($user->hasRole('guardian')) {
-            $guardianProfile = $user->guardianProfile;
-            if (! $guardianProfile instanceof Guardian) {
-                return false;
-            }
+            $linked = LinkedGuardianStudents::resolveForUser($user);
 
-            /** @var Collection<int, Student> $linkedStudents */
-            $linkedStudents = $guardianProfile->students()->get(['students.id']);
-            $linkedStudentIds = $linkedStudents
-                ->map(static fn (Student $s): int => (int) $s->getAttributeValue('user_id'))
-                ->all();
-
-            return \in_array((int) $enrollment->getAttributeValue('student_id'), $linkedStudentIds, true);
+            return \in_array((int) $enrollment->getAttributeValue('student_id'), $linked['profileIds'], true);
         }
 
         return false;

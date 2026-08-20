@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Apoderado\Widgets;
 
+use App\Filament\ApoderadoResources\Grades\GradeResource;
 use App\Models\Grade;
 use App\Models\User;
 use App\Support\LinkedGuardianStudents;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -84,6 +86,13 @@ final class ApoderadoGradesWidget extends BaseWidget
                     ->label(__('widgets.recent_grades_date'))
                     ->dateTime('M d, Y H:i')
                     ->sortable(false),
+            ])
+            ->actions([
+                Action::make('view_grade')
+                    ->label(__('widgets.recent_grades_view'))
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->url(fn (Grade $record): string => GradeResource::getUrl('view', ['record' => $record]))
+                    ->openUrlInNewTab(),
             ])
             ->paginated(false);
     }
