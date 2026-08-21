@@ -114,7 +114,7 @@ final class BoletinGuardian extends Page
                     ->with(['evaluation'])
                     ->where('student_id', (int) $student->getAttributeValue('user_id'))
                     ->whereIn('evaluation_id', $evaluationIds !== [] ? $evaluationIds : [-1])
-                    ->orderByDesc('graded_at')
+                    ->orderByDesc('created_at')
                     ->get();
                 $enrollmentRatio = null;
                 if ($grades->count() > 0) {
