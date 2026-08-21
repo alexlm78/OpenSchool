@@ -48,15 +48,16 @@ class EvaluationResource extends ApoderadoResource
     public static function table(Table $table): Table
     {
         $studentUserIds = static::linkedStudentUserIds();
-        $studentFilterOptions = self::buildStudentFilterOptions($studentUserIds);
+        $studentProfileIds = static::linkedStudentProfileIds();
+        $studentFilterOptions = self::buildStudentFilterOptions($studentProfileIds);
         $courseOfferingOptions = self::buildCourseOfferingOptions($studentUserIds);
 
-        return EvaluationsTable::configure($table, $studentFilterOptions, $courseOfferingOptions)
+        return EvaluationsTable::configure($table, $studentFilterOptions, $courseOfferingOptions, $studentUserIds, $studentProfileIds)
             ->modifyQueryUsing(function (Builder $query) use ($studentUserIds) {
                 $query->whereExists(function (QueryBuilder $q) use ($studentUserIds) {
                     $q->from('enrollments')
                         ->whereColumn('enrollments.course_offering_id', 'evaluations.course_offering_id')
-                        ->whereIn('enrollments.student_id', $studentUserIds)
+                        ->whereIn('enrollments.student_id', $studentUserIds !== [] ? $studentUserIds : [-1])
                         ->where('enrollments.status', 'active');
                 });
             });

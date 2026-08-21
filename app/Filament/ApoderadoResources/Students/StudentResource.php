@@ -46,8 +46,8 @@ class StudentResource extends ApoderadoResource
     {
         return StudentsTable::configure($table)
             ->modifyQueryUsing(function (Builder $query) {
-                $studentProfileIds = static::linkedStudentUserIds();
-                $query->whereIn('id', $studentProfileIds);
+                $studentProfileIds = static::linkedStudentProfileIds();
+                $query->whereIn('id', $studentProfileIds !== [] ? $studentProfileIds : [-1]);
             });
     }
 

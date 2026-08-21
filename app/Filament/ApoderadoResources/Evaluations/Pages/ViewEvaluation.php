@@ -92,31 +92,42 @@ class ViewEvaluation extends ViewRecord
                         RepeatableEntry::make('studentStatuses')
                             ->label(__('Linked Students'))
                             ->state(function (Evaluation $record) {
-                                $linkedIds = EvaluationResource::linkedStudentUserIds();
-                                if (empty($linkedIds)) {
+                                $linkedUserIds = EvaluationResource::linkedStudentUserIds();
+                                $linkedProfileIds = EvaluationResource::linkedStudentProfileIds();
+                                if (empty($linkedUserIds) || empty($linkedProfileIds)) {
                                     return collect();
                                 }
 
-                                $enrolledStudentIds = Enrollment::query()
-                                    ->whereIn('student_id', $linkedIds)
+                                $enrolledStudentUserIds = Enrollment::query()
+                                    ->whereIn('student_id', $linkedUserIds)
                                     ->where('course_offering_id', $record->course_offering_id)
                                     ->where('status', 'active')
                                     ->pluck('student_id')
                                     ->all();
 
-                                return Student::query()
+                                if ($enrolledStudentUserIds === []) {
+                                    return collect();
+                                }
+
+                                $profilesByUserId = Student::query()
                                     ->with('user:id,name')
-                                    ->whereIn('id', $enrolledStudentIds)
+                                    ->whereIn('id', $linkedProfileIds)
                                     ->get()
-                                    ->map(function (Student $student) use ($record) {
-                                        $studentProfileId = (int) $student->getKey();
+                                    ->keyBy(static fn (Student $s): int => (int) $s->getAttributeValue('user_id'));
+
+                                return collect($enrolledStudentUserIds)
+                                    ->map(function (int $userId) use ($record, $profilesByUserId) {
+                                        $student = $profilesByUserId->get($userId);
+                                        if (! $student instanceof Student) {
+                                            return;
+                                        }
 
                                         $submission = $record->submissions()
-                                            ->where('student_id', $studentProfileId)
+                                            ->where('student_id', $userId)
                                             ->first();
 
                                         $grade = $record->grades()
-                                            ->where('student_id', $studentProfileId)
+                                            ->where('student_id', $userId)
                                             ->with('grader:id,name')
                                             ->first();
 
@@ -140,7 +151,8 @@ class ViewEvaluation extends ViewRecord
                                             'grader_name' => $grade?->grader?->name,
                                             'graded_at' => $grade?->created_at,
                                         ];
-                                    });
+                                    })
+                                    ->filter();
                             })
                             ->schema([
                                 TextEntry::make('student_name')

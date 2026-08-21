@@ -46,7 +46,7 @@ final class GradePolicy
         if ($user->hasRole('guardian')) {
             $linked = LinkedGuardianStudents::resolveForUser($user);
 
-            return \in_array((int) $grade->getAttributeValue('student_id'), $linked['profileIds'], true);
+            return \in_array((int) $grade->getAttributeValue('student_id'), $linked['userIds'], true);
         }
 
         return false;

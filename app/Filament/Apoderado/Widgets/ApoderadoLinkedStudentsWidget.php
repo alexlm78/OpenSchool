@@ -33,11 +33,12 @@ final class ApoderadoLinkedStudentsWidget extends BaseWidget
 
         $linked = LinkedGuardianStudents::resolveForUser($user);
         $profileIds = $linked['profileIds'];
+        $userIds = $linked['userIds'];
 
         $activeCount = 0;
-        if ($profileIds !== []) {
+        if ($userIds !== []) {
             $activeCount = Enrollment::query()
-                ->whereIn('student_id', $profileIds)
+                ->whereIn('student_id', $userIds)
                 ->where('status', 'active')
                 ->distinct('student_id')
                 ->count('student_id');

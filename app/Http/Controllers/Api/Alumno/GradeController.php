@@ -38,7 +38,7 @@ final class GradeController extends Controller
 
         if ($user->hasRole('guardian')) {
             $linked = LinkedGuardianStudents::resolveForUser($user);
-            $query->whereIn('student_id', $linked['profileIds']);
+            $query->whereIn('student_id', $linked['userIds']);
         }
 
         if ($request->filled('evaluation_id')) {
@@ -65,7 +65,7 @@ final class GradeController extends Controller
             if ($studentId > 0) {
                 if ($user->hasRole('guardian')) {
                     $linked = LinkedGuardianStudents::resolveForUser($user);
-                    if (\in_array($studentId, $linked['profileIds'], true)) {
+                    if (\in_array($studentId, $linked['userIds'], true)) {
                         $query->where('student_id', $studentId);
                     } else {
                         $query->whereRaw('1 = 0');

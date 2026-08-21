@@ -56,7 +56,7 @@ final class SubmissionPolicy
         if ($user->hasRole('guardian')) {
             $linked = LinkedGuardianStudents::resolveForUser($user);
 
-            return \in_array((int) $submission->getAttributeValue('student_id'), $linked['profileIds'], true);
+            return \in_array((int) $submission->getAttributeValue('student_id'), $linked['userIds'], true);
         }
 
         return false;

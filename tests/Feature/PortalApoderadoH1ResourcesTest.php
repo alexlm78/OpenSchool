@@ -163,21 +163,21 @@ beforeEach(function (): void {
 
     $enrollmentA = Enrollment::query()->create([
         'school_id' => (int) $school->getKey(),
-        'student_id' => (int) $profileA->getKey(),
+        'student_id' => (int) $studentA->getKey(),
         'course_offering_id' => (int) $offering->getKey(),
         'status' => 'active',
         'enrolled_at' => now()->subDays(60),
     ]);
     $enrollmentB = Enrollment::query()->create([
         'school_id' => (int) $school->getKey(),
-        'student_id' => (int) $profileB->getKey(),
+        'student_id' => (int) $studentB->getKey(),
         'course_offering_id' => (int) $offering->getKey(),
         'status' => 'active',
         'enrolled_at' => now()->subDays(55),
     ]);
     Enrollment::query()->create([
         'school_id' => (int) $school->getKey(),
-        'student_id' => (int) $profileForeign->getKey(),
+        'student_id' => (int) $studentForeign->getKey(),
         'course_offering_id' => (int) $offering->getKey(),
         'status' => 'active',
         'enrolled_at' => now()->subDays(50),
@@ -200,7 +200,7 @@ beforeEach(function (): void {
     Grade::query()->create([
         'school_id' => (int) $school->getKey(),
         'evaluation_id' => (int) $evaluation->getKey(),
-        'student_id' => (int) $profileA->getKey(),
+        'student_id' => (int) $studentA->getKey(),
         'grader_id' => (int) $guardianUser->getKey(),
         'score' => 82,
         'feedback' => 'Bien Ana',
@@ -209,7 +209,7 @@ beforeEach(function (): void {
     Grade::query()->create([
         'school_id' => (int) $school->getKey(),
         'evaluation_id' => (int) $evaluation->getKey(),
-        'student_id' => (int) $profileForeign->getKey(),
+        'student_id' => (int) $studentForeign->getKey(),
         'grader_id' => (int) $guardianUser->getKey(),
         'score' => 44,
         'feedback' => 'Mal Zoe',
@@ -218,7 +218,7 @@ beforeEach(function (): void {
     Submission::query()->create([
         'school_id' => (int) $school->getKey(),
         'evaluation_id' => (int) $evaluation->getKey(),
-        'student_id' => (int) $profileA->getKey(),
+        'student_id' => (int) $studentA->getKey(),
         'status' => 'submitted',
         'late_flag' => false,
         'submitted_at' => now()->subDays(5),
@@ -432,7 +432,7 @@ it('Grade Resource returns only Ana grade and Policy denies Zoe grade', function
     $ids = $base->pluck('id')->all();
 
     $zoeGrade = Grade::query()
-        ->where('student_id', (int) $this->profileForeign->getKey())
+        ->where('student_id', (int) $this->studentForeign->getKey())
         ->firstOrFail();
 
     expect($ids)->not()->toContain((int) $zoeGrade->getKey());
@@ -495,7 +495,7 @@ it('ApoderadoGradesWidget RecentGrades returns only Ana grade, not Zoe', functio
     $widget->table($table);
     $ids = $table->getQuery()->pluck('id')->all();
     expect($ids)->not()->toContain(
-        (int) Grade::query()->where('student_id', (int) $this->profileForeign->getKey())->value('id'),
+        (int) Grade::query()->where('student_id', (int) $this->studentForeign->getKey())->value('id'),
     );
     expect(count($ids))->toBe(1);
 });

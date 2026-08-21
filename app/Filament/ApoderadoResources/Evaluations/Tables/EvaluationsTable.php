@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\ApoderadoResources\Evaluations\Tables;
 
-use App\Filament\ApoderadoResources\Evaluations\EvaluationResource;
 use App\Models\Evaluation;
 use App\Models\Student;
 use Filament\Actions\ViewAction;
@@ -18,24 +17,24 @@ class EvaluationsTable
     /**
      * @param  array<string, string>  $studentFilterOptions
      * @param  array<string, string>  $courseOfferingOptions
+     * @param  array<int, int>  $studentUserIds
+     * @param  array<int, int>  $studentProfileIds
      */
-    public static function configure(Table $table, array $studentFilterOptions = [], array $courseOfferingOptions = []): Table
+    public static function configure(Table $table, array $studentFilterOptions = [], array $courseOfferingOptions = [], array $studentUserIds = [], array $studentProfileIds = []): Table
     {
         return $table
             ->columns([
                 TextColumn::make('derivedStudent')
                     ->label(__('Student'))
-                    ->state(function (Evaluation $record, Table $livewireTable): string {
+                    ->state(function (Evaluation $record, Table $livewireTable) use ($studentUserIds, $studentProfileIds): string {
                         $tableFilters = method_exists($livewireTable, 'getTableFilters') ? $livewireTable->getTableFilters() : [];
                         $filters = $tableFilters['data'] ?? [];
-                        $selectedStudentId = $filters['student']['value'] ?? null;
+                        $selectedStudentProfileId = $filters['student']['value'] ?? null;
 
-                        $linkedIds = EvaluationResource::linkedStudentUserIds();
-
-                        if (! empty($selectedStudentId)) {
+                        if (! empty($selectedStudentProfileId)) {
                             $student = Student::query()
                                 ->with('user:id,name')
-                                ->where('id', (int) $selectedStudentId)
+                                ->where('id', (int) $selectedStudentProfileId)
                                 ->first();
                             if ($student instanceof Student && $student->user) {
                                 $name = (string) $student->user->name;
@@ -49,10 +48,11 @@ class EvaluationsTable
 
                         $students = Student::query()
                             ->with('user:id,name')
-                            ->whereIn('id', $linkedIds)
-                            ->whereExists(function (Builder $q) use ($record) {
+                            ->whereIn('id', $studentProfileIds !== [] ? $studentProfileIds : [-1])
+                            ->whereExists(function (Builder $q) use ($record, $studentUserIds) {
                                 $q->from('enrollments')
-                                    ->whereColumn('enrollments.student_id', 'students.id')
+                                    ->whereColumn('enrollments.student_id', 'students.user_id')
+                                    ->whereIn('enrollments.student_id', $studentUserIds !== [] ? $studentUserIds : [-1])
                                     ->where('enrollments.course_offering_id', $record->course_offering_id)
                                     ->where('enrollments.status', 'active');
                             })
@@ -117,17 +117,30 @@ class EvaluationsTable
                 TextColumn::make('computedStatus')
                     ->label(__('Status'))
                     ->badge()
-                    ->state(function (Evaluation $record, Table $livewireTable): string {
+                    ->state(function (Evaluation $record, Table $livewireTable) use ($studentUserIds, $studentProfileIds): string {
                         $tableFilters = method_exists($livewireTable, 'getTableFilters') ? $livewireTable->getTableFilters() : [];
                         $filters = $tableFilters['data'] ?? [];
-                        $selectedStudentId = $filters['student']['value'] ?? null;
-                        $linkedIds = EvaluationResource::linkedStudentUserIds();
+                        $selectedStudentProfileId = $filters['student']['value'] ?? null;
 
-                        $studentIds = ! empty($selectedStudentId) && \in_array((int) $selectedStudentId, $linkedIds, true)
-                            ? [(int) $selectedStudentId]
-                            : $linkedIds;
+                        $userIdFromProfile = static fn (int $profileId): ?int => $studentProfileIds !== []
+                            ? (collect($studentProfileIds)->search($profileId, true) !== false
+                                ? ($studentUserIds[array_search($profileId, $studentProfileIds, true)] ?? null)
+                                : null)
+                            : null;
 
-                        if (empty($studentIds)) {
+                        $targetUserIds = $studentUserIds;
+                        if (! empty($selectedStudentProfileId)) {
+                            $profileId = (int) $selectedStudentProfileId;
+                            $fromIndex = $userIdFromProfile($profileId);
+                            if ($fromIndex !== null) {
+                                $targetUserIds = [$fromIndex];
+                            } else {
+                                $lookup = Student::query()->where('id', $profileId)->value('user_id');
+                                $targetUserIds = $lookup !== null ? [(int) $lookup] : [];
+                            }
+                        }
+
+                        if ($targetUserIds === []) {
                             return 'no_students';
                         }
 
@@ -136,7 +149,7 @@ class EvaluationsTable
                         $allGraded = true;
                         $allSubmitted = true;
 
-                        foreach ($studentIds as $studentId) {
+                        foreach ($targetUserIds as $studentId) {
                             $hasSubmission = $record->submissions()
                                 ->where('student_id', $studentId)
                                 ->exists();
@@ -158,7 +171,7 @@ class EvaluationsTable
                             }
                         }
 
-                        if (\count($studentIds) === 1) {
+                        if (\count($targetUserIds) === 1) {
                             if ($allGraded) {
                                 return 'graded';
                             }
@@ -207,18 +220,29 @@ class EvaluationsTable
                 SelectFilter::make('student')
                     ->label(__('Estudiante'))
                     ->options($studentFilterOptions)
-                    ->modifyQueryUsing(function (Builder $query, $state): Builder {
+                    ->modifyQueryUsing(function (Builder $query, $state) use ($studentUserIds, $studentProfileIds): Builder {
                         $value = $state['value'] ?? null;
                         if (empty($value)) {
                             return $query;
                         }
 
-                        $studentId = (int) $value;
+                        $profileId = (int) $value;
+                        $pos = array_search($profileId, $studentProfileIds, true);
+                        $targetUserId = $pos !== false ? ($studentUserIds[$pos] ?? null) : null;
+                        if ($targetUserId === null && $profileId > 0) {
+                            $found = Student::query()
+                                ->where('id', $profileId)
+                                ->value('user_id');
+                            $targetUserId = $found !== null ? (int) $found : null;
+                        }
+                        if ($targetUserId === null) {
+                            return $query;
+                        }
 
-                        return $query->whereExists(function (Builder $q) use ($studentId) {
+                        return $query->whereExists(function (Builder $q) use ($targetUserId) {
                             $q->from('enrollments')
                                 ->whereColumn('enrollments.course_offering_id', 'evaluations.course_offering_id')
-                                ->where('enrollments.student_id', $studentId)
+                                ->where('enrollments.student_id', $targetUserId)
                                 ->where('enrollments.status', 'active');
                         });
                     }),

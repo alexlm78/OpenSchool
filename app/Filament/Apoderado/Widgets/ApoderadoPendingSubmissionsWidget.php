@@ -33,7 +33,7 @@ final class ApoderadoPendingSubmissionsWidget extends BaseWidget
         }
 
         $linked = LinkedGuardianStudents::resolveForUser($user);
-        $profileIds = $linked['profileIds'];
+        $profileIds = $linked['userIds'];
         if ($profileIds === []) {
             return [];
         }

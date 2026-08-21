@@ -46,7 +46,7 @@ final class EnrollmentPolicy
         if ($user->hasRole('guardian')) {
             $linked = LinkedGuardianStudents::resolveForUser($user);
 
-            return \in_array((int) $enrollment->getAttributeValue('student_id'), $linked['profileIds'], true);
+            return \in_array((int) $enrollment->getAttributeValue('student_id'), $linked['userIds'], true);
         }
 
         return false;

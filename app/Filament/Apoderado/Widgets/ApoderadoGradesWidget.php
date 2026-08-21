@@ -34,18 +34,18 @@ final class ApoderadoGradesWidget extends BaseWidget
         /** @var User|null $user */
         $user = Auth::user();
         $linked = $user instanceof User ? LinkedGuardianStudents::resolveForUser($user) : ['profileIds' => [], 'userIds' => []];
-        $profileIds = $linked['profileIds'];
+        $userIds = $linked['userIds'];
 
         return $table
             ->query(
                 Grade::query()
-                    ->with(['evaluation.courseOffering.courseTemplate', 'student.user'])
-                    ->whereIn('student_id', $profileIds !== [] ? $profileIds : [-1])
+                    ->with(['evaluation.courseOffering.courseTemplate', 'student:id,name'])
+                    ->whereIn('student_id', $userIds !== [] ? $userIds : [-1])
                     ->orderByDesc('created_at')
                     ->limit(5),
             )
             ->columns([
-                TextColumn::make('student.user.name')
+                TextColumn::make('student.name')
                     ->label(__('widgets.apoderado_student_name'))
                     ->searchable(false)
                     ->sortable(false),

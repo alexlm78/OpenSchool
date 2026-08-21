@@ -59,25 +59,24 @@ final class EvaluationController extends Controller
 
         if ($user->hasRole('guardian')) {
             $linked = LinkedGuardianStudents::resolveForUser($user);
-            $linkedProfileIds = $linked['profileIds'];
             $linkedUserIds = $linked['userIds'];
 
             $query
                 ->with([
-                    'submissions' => function ($q) use ($linkedProfileIds): void {
-                        $q->whereIn('student_id', $linkedProfileIds);
+                    'submissions' => function ($q) use ($linkedUserIds): void {
+                        $q->whereIn('student_id', $linkedUserIds);
                     },
-                    'grades' => function ($q) use ($linkedProfileIds): void {
-                        $q->whereIn('student_id', $linkedProfileIds);
+                    'grades' => function ($q) use ($linkedUserIds): void {
+                        $q->whereIn('student_id', $linkedUserIds);
                     },
                 ])
                 ->whereExists(
-                    static function (Builder $q) use ($schoolId, $linkedProfileIds): Builder {
+                    static function (Builder $q) use ($schoolId, $linkedUserIds): Builder {
                         $q->selectRaw('1')
                             ->from('enrollments')
                             ->whereColumn('enrollments.course_offering_id', 'evaluations.course_offering_id')
                             ->where('enrollments.school_id', $schoolId)
-                            ->whereIn('enrollments.student_id', $linkedProfileIds)
+                            ->whereIn('enrollments.student_id', $linkedUserIds)
                             ->whereIn('enrollments.status', ['active', 'completed']);
 
                         return $q;

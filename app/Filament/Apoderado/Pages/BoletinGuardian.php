@@ -57,7 +57,7 @@ final class BoletinGuardian extends Page
         }
         $linked = LinkedGuardianStudents::resolveForUser($user);
 
-        return $linked['profileIds'] !== [];
+        return $linked['profileIds'] !== [] || $linked['userIds'] !== [];
     }
 
     public function mount(): void
@@ -76,7 +76,8 @@ final class BoletinGuardian extends Page
         }
         $linked = LinkedGuardianStudents::resolveForUser($user);
         $profileIds = $linked['profileIds'];
-        if ($profileIds === []) {
+        $userIds = $linked['userIds'];
+        if ($profileIds === [] && $userIds === []) {
             abort(404);
         }
         $this->guardianName = (string) $user->getAttributeValue('name');
@@ -85,7 +86,7 @@ final class BoletinGuardian extends Page
         $students = Student::query()
             ->with(['user'])
             ->where('school_id', (int) $user->getAttributeValue('school_id'))
-            ->whereIn('id', $profileIds)
+            ->whereIn('id', $profileIds !== [] ? $profileIds : [-1])
             ->orderBy('id')
             ->get();
 
@@ -94,7 +95,7 @@ final class BoletinGuardian extends Page
         foreach ($students as $student) {
             $enrollments = Enrollment::query()
                 ->with(['courseOffering.courseTemplate'])
-                ->where('student_id', (int) $student->getKey())
+                ->where('student_id', (int) $student->getAttributeValue('user_id'))
                 ->where('school_id', (int) $user->getAttributeValue('school_id'))
                 ->whereIn('status', ['active', 'completed'])
                 ->orderBy('enrolled_at', 'desc')
@@ -111,7 +112,7 @@ final class BoletinGuardian extends Page
                     ->all();
                 $grades = Grade::query()
                     ->with(['evaluation'])
-                    ->where('student_id', (int) $student->getKey())
+                    ->where('student_id', (int) $student->getAttributeValue('user_id'))
                     ->whereIn('evaluation_id', $evaluationIds !== [] ? $evaluationIds : [-1])
                     ->orderByDesc('graded_at')
                     ->get();

@@ -59,7 +59,7 @@ final class EvaluationPolicy
 
             return Enrollment::query()
                 ->where('school_id', (int) $user->getAttributeValue('school_id'))
-                ->whereIn('student_id', $linked['profileIds'])
+                ->whereIn('student_id', $linked['userIds'])
                 ->where('course_offering_id', (int) $evaluation->getAttributeValue('course_offering_id'))
                 ->whereIn('status', ['active', 'completed'])
                 ->exists();

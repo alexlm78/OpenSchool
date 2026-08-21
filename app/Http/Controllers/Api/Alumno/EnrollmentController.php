@@ -35,7 +35,7 @@ final class EnrollmentController extends Controller
 
         if ($user->hasRole('guardian')) {
             $linked = LinkedGuardianStudents::resolveForUser($user);
-            $query->whereIn('student_id', $linked['profileIds']);
+            $query->whereIn('student_id', $linked['userIds']);
         }
 
         $sort = (string) $request->query('sort', '-enrolled_at');

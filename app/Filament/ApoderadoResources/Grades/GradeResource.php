@@ -49,13 +49,14 @@ class GradeResource extends ApoderadoResource
     public static function table(Table $table): Table
     {
         $studentUserIds = static::linkedStudentUserIds();
-        $studentFilterOptions = self::buildStudentFilterOptions($studentUserIds);
+        $studentProfileIds = static::linkedStudentProfileIds();
+        $studentFilterOptions = self::buildStudentFilterOptions($studentProfileIds);
         $evaluationOptions = self::buildEvaluationOptions($studentUserIds);
         $courseOfferingOptions = self::buildCourseOfferingOptions($studentUserIds);
 
-        return GradesTable::configure($table, $studentFilterOptions, $evaluationOptions, $courseOfferingOptions)
+        return GradesTable::configure($table, $studentFilterOptions, $evaluationOptions, $courseOfferingOptions, $studentUserIds)
             ->modifyQueryUsing(function (Builder $query) use ($studentUserIds) {
-                $query->whereIn('student_id', $studentUserIds);
+                $query->whereIn('student_id', $studentUserIds !== [] ? $studentUserIds : [-1]);
             });
     }
 

@@ -33,18 +33,19 @@ final class ApoderadoGpaStatWidget extends BaseWidget
 
         $linked = LinkedGuardianStudents::resolveForUser($user);
         $profileIds = $linked['profileIds'];
-        if ($profileIds === []) {
+        $userIds = $linked['userIds'];
+        if ($userIds === []) {
             return [];
         }
 
         /** @var int $count */
         $count = Grade::query()
-            ->whereIn('student_id', $profileIds)
+            ->whereIn('student_id', $userIds)
             ->count();
 
         /** @var float|null $sumByMax */
         $sumByMax = Grade::query()
-            ->whereIn('student_id', $profileIds)
+            ->whereIn('student_id', $userIds)
             ->whereExists(function ($q): void {
                 $q->from('evaluations')
                     ->whereColumn('evaluations.id', 'grades.evaluation_id')

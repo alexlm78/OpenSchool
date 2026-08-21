@@ -35,7 +35,7 @@ final class ApoderadoUpcomingEvaluationsWidget extends BaseWidget
         /** @var User|null $user */
         $user = Auth::user();
         $linked = $user instanceof User ? LinkedGuardianStudents::resolveForUser($user) : ['profileIds' => [], 'userIds' => []];
-        $profileIds = $linked['profileIds'];
+        $profileIds = $linked['userIds'];
 
         return $table
             ->query(

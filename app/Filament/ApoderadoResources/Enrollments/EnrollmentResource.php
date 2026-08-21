@@ -46,11 +46,12 @@ class EnrollmentResource extends ApoderadoResource
     public static function table(Table $table): Table
     {
         $studentUserIds = static::linkedStudentUserIds();
-        $studentFilterOptions = self::buildStudentFilterOptions($studentUserIds);
+        $studentProfileIds = static::linkedStudentProfileIds();
+        $studentFilterOptions = self::buildStudentFilterOptions($studentProfileIds);
 
-        return EnrollmentsTable::configure($table, $studentFilterOptions)
+        return EnrollmentsTable::configure($table, $studentFilterOptions, $studentUserIds)
             ->modifyQueryUsing(function (Builder $query) use ($studentUserIds) {
-                $query->whereIn('student_id', $studentUserIds);
+                $query->whereIn('student_id', $studentUserIds !== [] ? $studentUserIds : [-1]);
             });
     }
 

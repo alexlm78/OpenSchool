@@ -76,9 +76,35 @@ abstract class ApoderadoResource extends Resource
     }
 
     /**
-     * @return array<int, int> student profile ids linked to the current guardian
+     * @return array<int, int> student user ids linked to the current guardian
      */
     protected static function linkedStudentUserIds(): array
+    {
+        $guardianUserId = self::currentGuardianUserId();
+        if ($guardianUserId === null) {
+            return [];
+        }
+
+        $profile = Guardian::query()
+            ->where('user_id', $guardianUserId)
+            ->first();
+
+        if (! $profile instanceof Guardian) {
+            return [];
+        }
+
+        return $profile->students()
+            ->pluck('students.user_id')
+            ->map(static fn (mixed $v): ?int => is_numeric($v) ? (int) $v : null)
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, int> student profile (students table) ids linked to the current guardian
+     */
+    protected static function linkedStudentProfileIds(): array
     {
         $guardianUserId = self::currentGuardianUserId();
         if ($guardianUserId === null) {

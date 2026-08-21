@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\ApoderadoResources\Enrollments\Tables;
 
+use App\Models\Student;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -14,12 +15,13 @@ class EnrollmentsTable
 {
     /**
      * @param  array<string, string>  $studentFilterOptions
+     * @param  array<int, int>  $studentUserIds
      */
-    public static function configure(Table $table, array $studentFilterOptions = []): Table
+    public static function configure(Table $table, array $studentFilterOptions = [], array $studentUserIds = []): Table
     {
         return $table
             ->columns([
-                TextColumn::make('student.user.name')
+                TextColumn::make('student.name')
                     ->label(__('Student'))
                     ->searchable()
                     ->sortable(),
@@ -60,13 +62,23 @@ class EnrollmentsTable
                 SelectFilter::make('student')
                     ->label(__('Filtrar por Estudiante'))
                     ->options($studentFilterOptions)
-                    ->modifyQueryUsing(function (Builder $query, $state): Builder {
+                    ->modifyQueryUsing(function (Builder $query, $state) use ($studentUserIds): Builder {
                         $value = $state['value'] ?? null;
                         if (empty($value)) {
                             return $query;
                         }
 
-                        return $query->where('student_id', (int) $value);
+                        $profileId = (int) $value;
+                        $userId = collect($studentUserIds)->search($profileId, true);
+                        $target = $userId === false ? null : (int) $userId;
+                        if ($target === null && $profileId > 0) {
+                            $found = Student::query()
+                                ->where('id', $profileId)
+                                ->value('user_id');
+                            $target = $found !== null ? (int) $found : null;
+                        }
+
+                        return $target !== null ? $query->where('student_id', $target) : $query;
                     }),
                 SelectFilter::make('status')
                     ->label(__('Status'))
